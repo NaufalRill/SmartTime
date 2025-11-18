@@ -15,7 +15,7 @@ export default function LoginScreen() {
       <Text style={styles.title}>Smart Time</Text>
 
       <View style={styles.formGroup}>
-        <Text style={styles.label}>Username</Text>
+        <Text style={styles.label}>User</Text>
         <TextInput
           style={styles.input}
           placeholder="Username"
