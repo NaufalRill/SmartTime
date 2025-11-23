@@ -15,7 +15,7 @@ export default function LoginScreen() {
       <Text style={styles.title}>Smart Time</Text>
 
       <View style={styles.formGroup}>
-        <Text style={styles.label}>Username</Text>
+        <Text style={styles.label}>User</Text>
         <TextInput
           style={styles.input}
           placeholder="Username"
@@ -41,7 +41,7 @@ export default function LoginScreen() {
 
       <Text style={styles.footerText}>
         Don’t have an account?
-        <Text style={styles.register}> Register</Text>
+        <Text style={styles.register}> Register Now<Here></Here></Text>
       </Text>
     </View>
   );
