@@ -41,7 +41,7 @@ export default function LoginScreen() {
 
       <Text style={styles.footerText}>
         Don’t have an account?
-        <Text style={styles.register}> Register Now<Here></Here></Text>
+        <Text style={styles.register}> Register</Text>
       </Text>
     </View>
   );
