@@ -42,7 +42,7 @@ export default function LoginScreen() {
 
       <Text style={styles.footerText}>
         Don’t have an account?
-        <Link href="/auth/register" style={styles.register}> Register</Link> 
+        <Link href="/auth/register" style={styles.register}> Register here</Link> 
       </Text>
     </View>
   );
