@@ -18,7 +18,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.fastBtn}>
-          <Text style={styles.fastText}>Pengingat</Text>
+          <Text style={styles.fastText}>Pengingat Cepat</Text>
         </TouchableOpacity>
       </View>
 
