@@ -37,7 +37,7 @@ export default function LoginScreen() {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+        <Link href="/(tabs)/pages/home" style={styles.buttonText}>Login</Link>
       </TouchableOpacity>
 
       <Text style={styles.footerText}>

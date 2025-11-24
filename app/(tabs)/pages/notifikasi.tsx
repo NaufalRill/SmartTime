@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
 
 export default function NotifikasiScreen() {
   const [selected, setSelected] = useState("Reminder");
@@ -78,12 +79,13 @@ export default function NotifikasiScreen() {
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <Ionicons name="home" size={28} color="black" />
-        <Ionicons name="briefcase" size={28} color="black" />
-        <Ionicons name="add-circle-outline" size={36} color="black" />
-        <Ionicons name="notifications" size={28} color="black" />
-        <Ionicons name="settings" size={28} color="black" />
+        <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
+        <Link href="/(tabs)/pages/home"><Ionicons name="briefcase" size={28} /></Link>
+        <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
+        <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
+        <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
       </View>
+
     </View>
   );
 }
@@ -174,17 +176,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  bottomNav: {
+   bottomNav: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     height: 70,
     backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderColor: "#ddd",
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    borderTopWidth: 1,
-    borderColor: "#ddd",
   },
 });

@@ -1,0 +1,220 @@
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { Ionicons } from '@expo/vector-icons'; 
+import { Link } from "expo-router";
+
+export default function DetailScreen() {
+  return (
+    <View style={styles.mainContainer}>
+      
+      {/* --- CONTENT AREA --- */}
+      <ScrollView style={styles.contentContainer}>
+        <View style={styles.headerRow}>
+            <Link href="/(tabs)/pages/home"><Ionicons name="arrow-back" size={28} color="#000" /> </Link>
+            <Text style={styles.headerTitle}>Smart Time</Text>
+        </View>
+
+        {/* Kartu Detail Tugas */}
+        <View style={styles.card}>
+          
+          {/* Baris Judul & Icon */}
+          <View style={styles.cardHeaderRow}>
+            <Text style={styles.taskTitle}>Pra Skripsi</Text>
+            <View style={styles.headerIcons}>
+              {/* Titik Kuning */}
+              <View style={styles.yellowDot} />
+              {/* Chevron Down */}
+              <Ionicons name="chevron-down" size={24} color="white" style={{ marginLeft: 10 }} />
+            </View>
+          </View>
+
+          {/* Deadline */}
+          <Text style={styles.deadlineText}>Deadline : 25 Oktober 2025</Text>
+
+          {/* Bagian Status */}
+          <View style={styles.statusContainer}>
+            <View style={styles.statusRow}>
+              <Text style={styles.statusLabel}>Status :</Text>
+              <Text style={styles.statusValue}>Sedang Dikerjakan</Text>
+            </View>
+            {/* Garis putih di bawah status */}
+            <View style={styles.underline} />
+          </View>
+
+          {/* Progress Bar */}
+          <View style={styles.progressContainer}>
+            <View style={styles.progressTrack}>
+              <View style={[styles.progressFill, { width: "40%" }]} />
+            </View>
+          </View>
+        </View>
+
+        {/* Tombol Aksi */}
+        <View style={styles.actionContainer}>
+          <TouchableOpacity style={styles.actionButton}>
+            <Link href="/(tabs)/ubah_progres" style={styles.actionButtonText}>Ubah Progres</Link>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.actionButton}>
+            <Text style={styles.actionButtonText}>Tanda Selesai</Text>
+          </TouchableOpacity>
+        </View>
+
+      </ScrollView>
+
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNav}>
+        <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
+        <Link href="/(tabs)/pages/home"><Ionicons name="briefcase" size={28} /></Link>
+        <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
+        <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
+        <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 50,
+  },
+
+headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+
+  headerTitle: {
+    fontSize: 26,
+    fontWeight: "700",
+    marginLeft: 10,
+    color: "#3E2CD2",
+  },
+  
+  // Styles Kartu
+  card: {
+    backgroundColor: "#3423CA", // Warna biru/ungu gelap sesuai gambar
+    borderRadius: 20,
+    padding: 20,
+    paddingBottom: 30,
+    marginBottom: 30,
+  },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 5,
+  },
+  taskTitle: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  headerIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  yellowDot: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#FFE600', // Warna kuning
+  },
+  deadlineText: {
+    color: 'white',
+    fontSize: 14,
+    marginBottom: 30,
+    opacity: 0.9,
+  },
+  
+  // Styles Bagian Status
+  statusContainer: {
+    marginBottom: 30,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    paddingRight: 20, // Agar teks tidak terlalu mepet kanan
+  },
+  statusLabel: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  statusValue: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  underline: {
+    height: 1.5,
+    backgroundColor: 'white',
+    width: '100%',
+    opacity: 0.8,
+  },
+
+  // Styles Progress Bar
+  progressContainer: {
+    marginTop: 10,
+  },
+  progressTrack: {
+    width: "100%",
+    height: 12,
+    backgroundColor: "#D9D9D9", // Abu-abu terang
+    borderRadius: 10,
+  },
+  progressFill: {
+    height: 12,
+    backgroundColor: "#D32F2F", // Merah gelap
+    borderRadius: 10,
+  },
+
+  // Styles Tombol Aksi
+  actionContainer: {
+    alignItems: 'center',
+    gap: 15, // Jarak antar tombol
+  },
+  actionButton: {
+    backgroundColor: "#3B28D6", // Ungu sedikit lebih terang dari kartu atau sama
+    width: '100%', // Tombol lebar penuh
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+	width: 0,
+	height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 3,
+  },
+  actionButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
+   bottomNav: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 70,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderColor: "#ddd",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+});

@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from '@expo/vector-icons';
+import { Link } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -77,12 +79,13 @@ export default function UbahProgres() {
       </ScrollView>
 
       {/* Bottom Navigation - NOTE: If you use Expo Router (tabs), you might not need this manually */}
+      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <Text style={styles.navIcon}>🏠</Text>
-        <Text style={styles.navIcon}>💼</Text>
-        <Text style={[styles.navIcon, { fontSize: 36 }]}>➕</Text>
-        <Text style={styles.navIcon}>🔔</Text>
-        <Text style={styles.navIcon}>⚙️</Text>
+        <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
+        <Link href="/(tabs)/pages/home"><Ionicons name="briefcase" size={28} /></Link>
+        <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
+        <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
+        <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
       </View>
     </SafeAreaView>
   );
@@ -238,16 +241,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     left: 0,
-    width: width,
-    backgroundColor: "white",
+    right: 0,
+    height: 70,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderColor: "#ddd",
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
-  },
-  navIcon: {
-    fontSize: 28,
   },
 });

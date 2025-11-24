@@ -8,7 +8,8 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
-import { Ionicons, MaterialIcons, Feather } from "@expo/vector-icons";
+import { Ionicons} from "@expo/vector-icons";
+import { Link } from "expo-router";
 
 export default function TambahTugasScreen() {
   const [filter, setFilter] = useState("");
@@ -134,12 +135,12 @@ export default function TambahTugasScreen() {
       </View>
 
       {/* Bottom Nav */}
-      <View style={styles.navbar}>
-        <Ionicons name="home" size={28} color="black" />
-        <Ionicons name="briefcase" size={28} color="black" />
-        <Ionicons name="add-circle-outline" size={34} color="black" />
-        <Ionicons name="notifications-outline" size={28} color="black" />
-        <Feather name="settings" size={28} color="black" />
+      <View style={styles.bottomNav}>
+        <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
+        <Link href="/(tabs)/pages/home"><Ionicons name="briefcase" size={28} /></Link>
+        <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
+        <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
+        <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
       </View>
     </View>
   );
@@ -328,17 +329,18 @@ const styles = StyleSheet.create({
   },
 
   /* NAVBAR */
-  navbar: {
-    width: "100%",
-    height: 55,
+  bottomNav: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 70,
+    backgroundColor: "#fff",
     borderTopWidth: 1,
-    borderColor: "#E5E5E5",
+    borderColor: "#ddd",
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    position: "absolute",
-    bottom: 0,
-    backgroundColor: "#FFF",
   },
 });
 
