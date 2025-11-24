@@ -19,7 +19,7 @@ const jenisOptions = ["Pop-Up", "Kalender", "Pesan"];
 
         {/* Header */}
         <View style={styles.headerRow}>
-          <Ionicons name="arrow-back" size={26} color="#000" />
+          <Link href="/(tabs)/pages/home"><Ionicons name="arrow-back" size={28} color="#000" /> </Link>
           <Text style={styles.headerTitle}>Tambah Pengingat</Text>
         </View>
 
@@ -123,13 +123,13 @@ const jenisOptions = ["Pop-Up", "Kalender", "Pesan"];
           </TouchableOpacity>
         )}
 
-       {/* Bottom Navigation */}
+      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <Ionicons name="home" size={28} />
-        <Ionicons name="briefcase" size={28} />
-        <Ionicons name="add-circle-outline" size={36} />
+        <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
+        <Link href="/(tabs)/pages/home"><Ionicons name="briefcase" size={28} /></Link>
+        <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
         <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
-        <Ionicons name="settings" size={28} />
+        <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
       </View>
       
     </View>

@@ -1,4 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import { Link } from "expo-router";
 
 export default function HomeScreen() {
   const tasks = [
@@ -18,14 +20,14 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.fastBtn}>
-          <Text style={styles.fastText}>Pengingat Cepat</Text>
+          <Link href="/(tabs)/pages/tambahpengingat" style={styles.fastText}>Pengingat Cepat</Link>
         </TouchableOpacity>
       </View>
 
       <ScrollView style={{ marginTop: 10 }}>
         {tasks.map((item, index) => (
           <View key={index} style={styles.card}>
-            <Text style={styles.cardTitle}>{item.title}</Text>
+            <Link href="/(tabs)/pages/detail-tugas" style={styles.cardTitle}>{item.title}</Link>
             <Text style={styles.cardSub}>{item.due}</Text>
 
             {/* Progress Bar */}
@@ -33,8 +35,23 @@ export default function HomeScreen() {
               <View style={[styles.progressFill, { width: `${item.progress * 100}%` }]} />
             </View>
           </View>
+
+
         ))}
+
+        
+
       </ScrollView>
+
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNav}>
+        <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
+        <Link href="/(tabs)/pages/home"><Ionicons name="briefcase" size={28} /></Link>
+        <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
+        <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
+        <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
+      </View>
+
     </View>
   );
 }
@@ -101,5 +118,19 @@ const styles = StyleSheet.create({
     height: 8,
     backgroundColor: "red",
     borderRadius: 10,
+  },
+
+  bottomNav: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 70,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderColor: "#ddd",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
   },
 });

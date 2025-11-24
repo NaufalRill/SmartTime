@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, Switch, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
 
 const PengaturanReminder = () => {
   const [notifSound, setNotifSound] = useState(true);
@@ -42,22 +43,18 @@ const PengaturanReminder = () => {
 
       {/* Logout Button */}
       <TouchableOpacity style={styles.logoutBtn}>
-        <Text style={styles.logoutText}>Log Out</Text>
+        <Link href="/auth/login" style={styles.logoutText}>Log Out</Link>
       </TouchableOpacity>
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <Ionicons name="home" size={30} color="#000" />
-        <Ionicons name="briefcase" size={30} color="#000" />
-
-        {/* Middle Circle Button */}
-        <View style={styles.centerBtn}>
-          <Ionicons name="add" size={32} color="#000" />
-        </View>
-
-        <Ionicons name="notifications" size={30} color="#000" />
-        <Ionicons name="settings" size={30} color="#000" />
+        <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
+        <Link href="/(tabs)/pages/home"><Ionicons name="briefcase" size={28} /></Link>
+        <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
+        <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
+        <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
       </View>
+
     </View>
   );
 };
@@ -122,14 +119,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 80,
+    height: 70,
     backgroundColor: "#fff",
     borderTopWidth: 1,
     borderColor: "#ddd",
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    paddingBottom: 8,
   },
 
   centerBtn: {
