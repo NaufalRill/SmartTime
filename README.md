@@ -11,6 +11,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    ```
 
 2. Start the app
+[Referensi sebagai Gap Penelitian.pdf](https://github.com/user-attachments/files/23724520/Referensi.sebagai.Gap.Penelitian.pdf)
 
    ```bash
    npx expo start
