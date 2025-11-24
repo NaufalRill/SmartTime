@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   /* FILTER */
   filterBox: {
     width: 110,
-    height: 28,
+    height: 27,
     backgroundColor: "#F3F3F3",
     borderRadius: 7,
     borderColor: "#D0D0D0",
