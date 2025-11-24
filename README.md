@@ -16,7 +16,7 @@ Anggota:
 
 ## E.Worksheet : [Kelas C_2022-059_2022-087_2022-317_2022-.pdf](https://github.com/user-attachments/files/23725198/Kelas.C_2022-059_2022-087_2022-317_2022-.pdf)
 
-## F. Low Fidelity : 
+## F. Low Fidelity : [Low Fidelity_Kelas C_2022-059_2022-087_2022-317_2022-405.pdf](https://github.com/user-attachments/files/23725653/Low.Fidelity_Kelas.C_2022-059_2022-087_2022-317_2022-405.pdf)
 
 
 ## G. Tabel Pembagian Tugas (backlog) tiap anggota secara bergantian dengan level product Owner, Scrum Master, dan tim pengembangan
