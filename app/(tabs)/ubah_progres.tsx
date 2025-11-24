@@ -1,78 +1,253 @@
 import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const { width } = Dimensions.get("window");
 
 export default function UbahProgres() {
   return (
-    <div className="w-full min-h-screen bg-white p-4 font-sans">
-      {/* Header */}
-      <h1 className="text-4xl font-bold text-indigo-700">Ubah Progres</h1>
-      <div className="w-full h-[2px] bg-indigo-200 mt-2" />
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Header */}
+        <Text style={styles.headerTitle}>Ubah Progres</Text>
+        <View style={styles.headerLine} />
 
-      {/* Notifikasi Card */}
-      <div className="mt-6 bg-indigo-700 text-white rounded-3xl p-6 shadow-md">
-        <div className="flex items-center gap-2 text-xl font-semibold mb-4">
-          <span>🔔</span>
-          <p>Notifikasi</p>
-        </div>
+        {/* Notifikasi Card */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardIcon}>🔔</Text>
+            <Text style={styles.cardTitle}>Notifikasi</Text>
+          </View>
 
-        {/* List */}
-        <div className="flex justify-between items-center py-2">
-          <p>Rekayasa Interaksi</p>
-          <span className="text-green-400 text-xl">✔</span>
-        </div>
-        <div className="flex justify-between items-center py-2">
-          <p>Pra Skripsi</p>
-          <span className="text-green-400 text-xl">✔</span>
-        </div>
-        <div className="flex justify-between items-center py-2">
-          <p>Praktikum PKPL</p>
-          <span className="text-green-400 text-xl">✔</span>
-        </div>
+          {/* List */}
+          {/* Item 1 */}
+          <View style={styles.listItem}>
+            <Text style={styles.listText}>Rekayasa Interaksi</Text>
+            <Text style={styles.checkIcon}>✔</Text>
+          </View>
+          {/* Item 2 */}
+          <View style={styles.listItem}>
+            <Text style={styles.listText}>Pra Skripsi</Text>
+            <Text style={styles.checkIcon}>✔</Text>
+          </View>
+          {/* Item 3 */}
+          <View style={styles.listItem}>
+            <Text style={styles.listText}>Praktikum PKPL</Text>
+            <Text style={styles.checkIcon}>✔</Text>
+          </View>
 
-        {/* Button */}
-        <button className="w-full bg-white text-indigo-700 font-semibold py-2 rounded-full mt-4 shadow">
-          Simpan
-        </button>
-      </div>
+          {/* Button */}
+          <TouchableOpacity style={styles.button} activeOpacity={0.8}>
+            <Text style={styles.buttonText}>Simpan</Text>
+          </TouchableOpacity>
+        </View>
 
-      {/* Statistik */}
-      <h2 className="text-center text-2xl font-semibold text-gray-700 mt-8">
-        Stastistik Tugas
-      </h2>
+        {/* Statistik Header */}
+        <Text style={styles.statsHeader}>Stastistik Tugas</Text>
 
-      <div className="mt-4 text-gray-800 text-lg">
-        <div className="flex justify-between py-1">
-          <p>Tugas Selesai</p>
-          <p>2</p>
-        </div>
-        <div className="flex justify-between py-1">
-          <p>Tugas Berjalan</p>
-          <p>3</p>
-        </div>
-        <div className="flex justify-between py-1">
-          <p>Tugas Belum Dimulai</p>
-          <p>1</p>
-        </div>
-      </div>
+        {/* Statistik List */}
+        <View style={styles.statsContainer}>
+          <View style={styles.statsRow}>
+            <Text style={styles.statsLabel}>Tugas Selesai</Text>
+            <Text style={styles.statsValue}>2</Text>
+          </View>
+          <View style={styles.statsRow}>
+            <Text style={styles.statsLabel}>Tugas Berjalan</Text>
+            <Text style={styles.statsValue}>3</Text>
+          </View>
+          <View style={styles.statsRow}>
+            <Text style={styles.statsLabel}>Tugas Belum Dimulai</Text>
+            <Text style={styles.statsValue}>1</Text>
+          </View>
+        </View>
 
-      {/* Progress Circle */}
-      <div className="flex justify-center mt-6">
-        <div className="relative w-40 h-40">
-          <div className="w-full h-full rounded-full border-8 border-gray-300" />
-          <div className="absolute top-0 left-0 w-full h-full rounded-full border-8 border-indigo-700 border-t-transparent rotate-[140deg]" />
-          <div className="absolute inset-0 flex items-center justify-center text-2xl font-semibold text-gray-700">
-            40%
-          </div>
-        </div>
-      </div>
+        {/* Progress Circle */}
+        <View style={styles.circleContainer}>
+          <View style={styles.circleWrapper}>
+            {/* Background Circle (Grey) */}
+            <View style={styles.circleBase} />
+            {/* Progress Arc (Indigo) - Rotated to look like 40% */}
+            <View style={styles.circleProgress} />
+            {/* Inner Text */}
+            <View style={styles.circleTextContainer}>
+              <Text style={styles.circleText}>40%</Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
 
-      {/* Bottom Navigation */}
-      <div className="w-full fixed bottom-0 left-0 bg-white shadow-inner py-3 flex justify-around text-3xl">
-        <span>🏠</span>
-        <span>💼</span>
-        <span className="text-4xl">➕</span>
-        <span>🔔</span>
-        <span>⚙️</span>
-      </div>
-    </div>
+      {/* Bottom Navigation - NOTE: If you use Expo Router (tabs), you might not need this manually */}
+      <View style={styles.bottomNav}>
+        <Text style={styles.navIcon}>🏠</Text>
+        <Text style={styles.navIcon}>💼</Text>
+        <Text style={[styles.navIcon, { fontSize: 36 }]}>➕</Text>
+        <Text style={styles.navIcon}>🔔</Text>
+        <Text style={styles.navIcon}>⚙️</Text>
+      </View>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 100, // Add padding for bottom nav
+  },
+  // Header Styles
+  headerTitle: {
+    fontSize: 30, // text-4xl
+    fontWeight: "bold",
+    color: "#4338ca", // text-indigo-700
+  },
+  headerLine: {
+    width: "100%",
+    height: 2,
+    backgroundColor: "#c7d2fe", // bg-indigo-200
+    marginTop: 8,
+  },
+  // Card Styles
+  card: {
+    marginTop: 24,
+    backgroundColor: "#4338ca", // bg-indigo-700
+    borderRadius: 24, // rounded-3xl
+    padding: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5, // Shadow for Android
+  },
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+    gap: 8,
+  },
+  cardIcon: {
+    fontSize: 20,
+    color: "white",
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "white",
+  },
+  listItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  listText: {
+    color: "white",
+    fontSize: 16,
+  },
+  checkIcon: {
+    color: "#4ade80", // text-green-400
+    fontSize: 20,
+  },
+  button: {
+    width: "100%",
+    backgroundColor: "white",
+    paddingVertical: 12,
+    borderRadius: 9999, // rounded-full
+    marginTop: 16,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  buttonText: {
+    color: "#4338ca", // text-indigo-700
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  // Stats Styles
+  statsHeader: {
+    textAlign: "center",
+    fontSize: 24,
+    fontWeight: "600",
+    color: "#374151", // text-gray-700
+    marginTop: 32,
+  },
+  statsContainer: {
+    marginTop: 16,
+  },
+  statsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 4,
+  },
+  statsLabel: {
+    fontSize: 18,
+    color: "#1f2937", // text-gray-800
+  },
+  statsValue: {
+    fontSize: 18,
+    color: "#1f2937",
+    fontWeight: "bold",
+  },
+  // Progress Circle Styles
+  circleContainer: {
+    alignItems: "center",
+    marginTop: 24,
+  },
+  circleWrapper: {
+    position: "relative",
+    width: 160,
+    height: 160,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  circleBase: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    borderRadius: 80,
+    borderWidth: 8,
+    borderColor: "#d1d5db", // border-gray-300
+  },
+  circleProgress: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    borderRadius: 80,
+    borderWidth: 8,
+    borderColor: "#4338ca", // indigo-700
+    borderTopColor: "transparent", // Create the 'gap'
+    transform: [{ rotate: "140deg" }], // Rotate to match image
+  },
+  circleTextContainer: {
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  circleText: {
+    fontSize: 24,
+    fontWeight: "600",
+    color: "#374151",
+  },
+  // Bottom Nav Styles
+  bottomNav: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    width: width,
+    backgroundColor: "white",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#e5e7eb",
+  },
+  navIcon: {
+    fontSize: 28,
+  },
+});
