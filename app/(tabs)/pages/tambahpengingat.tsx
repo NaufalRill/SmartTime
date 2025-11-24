@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, TouchableWithoutFeedback } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
+import React, { useState } from "react";
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 
 export default function TambahPengingat() {
 
@@ -128,7 +128,7 @@ const jenisOptions = ["Pop-Up", "Kalender", "Pesan"];
         <Ionicons name="home" size={28} />
         <Ionicons name="briefcase" size={28} />
         <Ionicons name="add-circle-outline" size={36} />
-        <Link href="/notifikasi"><Ionicons name="notifications" size={28} /></Link>
+        <Link href="/pages/home"><Ionicons name="notifications" size={28} /></Link>
         <Ionicons name="settings" size={28} />
       </View>
       
