@@ -1,51 +1,30 @@
-# Welcome to your Expo app 👋
+## A.Nama Aplikasi : 
+# SmartTime
+## B.Deskripsi Aplikasi : 
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+SmartTime adalah aplikasi manajemen waktu dan produktivitas yang dirancang untuk membantu pengguna mengatur aktivitas harian, mengelola tugas, serta memantau progres pekerjaan secara lebih efektif. Dengan tampilan antarmuka yang sederhana dan modern, SmartTime memberikan pengalaman penggunaan yang nyaman, terutama bagi mahasiswa, pekerja, atau siapa pun yang membutuhkan pengaturan waktu yang terstruktur. Aplikasi ini menyediakan fitur pencatatan tugas, pengingat (reminder) otomatis, statistik progres, dan navigasi cepat yang memudahkan pengguna untuk mengakses seluruh fitur hanya dalam beberapa ketukan. SmartTime juga menampilkan visualisasi progres berupa grafik yang membantu pengguna melihat perkembangan penyelesaian tugas secara real-time. Dengan SmartTime, pengguna dapat lebih fokus, teratur, dan konsisten dalam mencapai target harian mereka, menjadikan aplikasi ini sebagai pendamping yang tepat untuk meningkatkan produktivitas.
 
-## Get started
+## C. Kelas : 
+7D (kelas asal 7C)
+Anggota:
+* Yogi Pratama Nusantara	202210370311059
+* Naufal Ghifari Ramadhana	202210370311087
+* Intan Atsilah			   202210370311317
+* Mumtaaz Nugroho Eka	   202210370311405
 
-1. Install dependencies
+## D. Link Figma : https://www.figma.com/design/kHOmLSF8v2so7M3pcYTwx5/Tugas-Prototype-RI--Copy-?node-id=1039-147&t=7qvwkATks1AVvBS1-1
 
-   ```bash
-   npm install
-   ```
+## E.Worksheet : [Kelas C_2022-059_2022-087_2022-317_2022-.pdf](https://github.com/user-attachments/files/23725198/Kelas.C_2022-059_2022-087_2022-317_2022-.pdf)
 
-2. Start the app
-[Referensi sebagai Gap Penelitian.pdf](https://github.com/user-attachments/files/23724520/Referensi.sebagai.Gap.Penelitian.pdf)
+## F. Low Fidelity : 
 
-   ```bash
-   npx expo start
-   ```
 
-In the output, you'll find options to open the app in a
+## G. Tabel Pembagian Tugas (backlog) tiap anggota secara bergantian dengan level product Owner, Scrum Master, dan tim pengembangan
+### 🗓️ Pembagian Peran Tim Agile - Aplikasi SmartTime
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+| Agile Organization | Fitur A | Fitur B | Fitur C | Fitur D |
+| :--- | :---: | :---: | :---: | :---: |
+| **Product Owner** | Intan | Yogi | Naufal | Mumtaaz |
+| **Scrum Master** | Yogi | Naufal | Mumtaaz | Intan |
+| **Tim Pengembangan** | Naufal<br>Mumtaaz | Intan<br>Mumtaaz | Intan<br>Yogi | Yogi<br>Naufal |
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
