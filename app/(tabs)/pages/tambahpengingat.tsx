@@ -128,7 +128,7 @@ const jenisOptions = ["Pop-Up", "Kalender", "Pesan"];
         <Ionicons name="home" size={28} />
         <Ionicons name="briefcase" size={28} />
         <Ionicons name="add-circle-outline" size={36} />
-        <Link href="/notifikasi"><Ionicons name="notifications" size={28} /></Link>
+        <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
         <Ionicons name="settings" size={28} />
       </View>
       
