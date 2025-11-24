@@ -29,14 +29,14 @@ export default function NotifikasiScreen() {
             selected === "Reminder" && styles.activeFilter,
           ]}
         >
-          <Text
+          <Link href="/(tabs)/popup"
             style={[
               styles.filterText,
               selected === "Reminder" && styles.activeFilterText,
             ]}
           >
             Reminder
-          </Text>
+          </Link>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -80,7 +80,7 @@ export default function NotifikasiScreen() {
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
-        <Link href="/(tabs)/pages/home"><Ionicons name="briefcase" size={28} /></Link>
+        <Link href="/(tabs)/TambahKegiatan"><Ionicons name="briefcase" size={28} /></Link>
         <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
         <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
         <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>

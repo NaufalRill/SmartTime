@@ -7,6 +7,7 @@ import {
   GestureResponderEvent,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
 
 const ReminderScreen: React.FC = () => {
   return (
@@ -52,12 +53,13 @@ const ReminderScreen: React.FC = () => {
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <Ionicons name="home" size={28} />
-        <Ionicons name="briefcase" size={28} />
-        <Ionicons name="add-circle-outline" size={36} />
-        <Ionicons name="notifications" size={28} />
-        <Ionicons name="settings" size={28} />
+        <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
+        <Link href="/(tabs)/TambahKegiatan"><Ionicons name="briefcase" size={28} /></Link>
+        <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
+        <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
+        <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
       </View>
+
     </View>
   );
 };
@@ -167,7 +169,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  bottomNav: {
+   bottomNav: {
     position: "absolute",
     bottom: 0,
     left: 0,

@@ -10,6 +10,9 @@ import {
   useTheme 
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons'; 
+import { Link } from "expo-router";
+
 
 // 1. Definisikan tipe Props untuk komponen kustom
 interface FormRowProps {
@@ -198,14 +201,14 @@ const TambahKegiatan: React.FC = () => {
 
       </ScrollView>
 
-      {/* Navigasi Bawah (Bottom Navigation Bar) */}
-      <View style={[styles.bottomNav, { backgroundColor: theme.colors.surface }]}>
-        <View style={styles.navItem}><Text>🏠</Text><Text style={styles.navLabel}>Home</Text></View>
-        <View style={styles.navItem}><Text>💼</Text><Text style={styles.navLabel}>Task</Text></View>
-        <View style={styles.navItem}><Text style={styles.navCenterIcon}>➕</Text></View>
-        <View style={styles.navItem}><Text>🔔</Text><Text style={styles.navLabel}>Notif</Text></View>
-        <View style={styles.navItem}><Text>⚙️</Text><Text style={styles.navLabel}>Setting</Text></View>
-      </View>
+       {/* Bottom Navigation */}
+            <View style={styles.bottomNav}>
+              <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
+              <Link href="/(tabs)/TambahKegiatan"><Ionicons name="briefcase" size={28} /></Link>
+              <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
+              <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
+              <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
+            </View>
     </SafeAreaView>
   );
 };
@@ -281,18 +284,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  bottomNav: {
-    position: 'absolute',
+   bottomNav: {
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: 5,
+    height: 70,
+    backgroundColor: "#fff",
     borderTopWidth: 1,
-    borderTopColor: '#eee',
-    height: 70, 
+    borderColor: "#ddd",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
   },
   navItem: {
     flex: 1,
