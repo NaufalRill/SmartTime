@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
-import { Link, useRouter } from "expo-router"; 
+import { useRouter } from "expo-router"; 
 
 export default function LoginScreen() {
   const router = useRouter(); 
@@ -96,7 +96,12 @@ export default function LoginScreen() {
 
       <Text style={styles.footerText}>
         Don’t have an account?
-        <Link href="/auth/register" style={styles.register}> Register</Link> 
+        <Text
+          style={styles.register}
+          onPress={() => router.push("/auth/register")}
+        >
+          {" "}Register
+        </Text>
       </Text>
     </View>
   );
