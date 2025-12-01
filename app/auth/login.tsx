@@ -1,14 +1,43 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { Link } from "expo-router";
+import { router } from "expo-router";
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    console.log("Username:", username);
-    console.log("Password:", password);
+  const handleLogin = async () => {
+    if (!username || !password) {
+      alert("Username dan password wajib diisi");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Login gagal");
+        return;
+      }
+
+      console.log("Token:", data.token);
+
+      // arahkan ke halaman home
+      router.push("/(tabs)/pages/home");
+
+    } catch (error) {
+      console.log("Login Error:", error);
+      alert("Terjadi kesalahan koneksi ke server");
+    }
   };
 
   return (
@@ -37,12 +66,17 @@ export default function LoginScreen() {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Link href="/(tabs)/pages/home" style={styles.buttonText}>Login</Link>
+        <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
       <Text style={styles.footerText}>
         Don’t have an account?
-        <Link href="/auth/register" style={styles.register}> Register</Link> 
+        <Text
+          style={styles.register}
+          onPress={() => router.push("/auth/register")}
+        >
+          {" "}Register
+        </Text>
       </Text>
     </View>
   );
