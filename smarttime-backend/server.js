@@ -68,6 +68,45 @@ app.post('/api/login', (req, res) => {
     });
 });
 
+app.post('/api/tambahkegiatan', (req, res) => {
+    const { 
+        nama_kegiatan, 
+        kategori, 
+        tanggal, 
+        waktu_mulai, 
+        waktu_selesai, 
+        catatan 
+    } = req.body;
+
+    // Validasi (catatan boleh kosong)
+    if (!nama_kegiatan || !kategori || !tanggal || !waktu_mulai || !waktu_selesai) {
+    return res.status(400).json({
+        success: false,
+        message: "Semua field kecuali catatan wajib diisi!"
+    });
+}
+
+
+    const insertSql = `
+    INSERT INTO tambahkegiatan 
+    (nama_kegiatan, kategori, tanggal, waktu_mulai, waktu_selesai, catatan)
+    VALUES (?, ?, ?, ?, ?, ?)
+`;
+
+db.query(
+    insertSql,
+    [nama_kegiatan, kategori, tanggal, waktu_mulai, waktu_selesai, catatan || null],
+    (err, result) => {
+        if (err) return res.status(500).json(err);
+
+        console.log("Kegiatan baru masuk DB!");
+        res.json({ success: true, message: "Kegiatan berhasil ditambahkan!" });
+    }
+);
+
+});
+
+
 app.listen(PORT, () => {
     console.log(`Server berjalan di http://localhost:${PORT}`);
 });

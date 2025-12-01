@@ -33,15 +33,21 @@ const FormRow: React.FC<FormRowProps> = ({ label, children }) => {
   );
 };
 
-const TambahKegiatan: React.FC = () => {
+const tambahkegiatan: React.FC = () => {
   // 2. State dengan tipe eksplisit
-  const [namaKegiatan, setNamaKegiatan] = useState<string>('');
+  const [nama_kegiatan, setNamaKegiatan] = useState<string>('');
   const [kategori, setKategori] = useState<string>('Pilih opsi');
   const [tanggal, setTanggal] = useState<string>(''); 
-  const [waktuMulai, setWaktuMulai] = useState<string>(''); 
-  const [waktuSelesai, setWaktuSelesai] = useState<string>(''); 
+  const [waktu_mulai, setWaktuMulai] = useState<string>(''); 
+  const [waktu_selesai, setWaktuSelesai] = useState<string>(''); 
   const [catatan, setCatatan] = useState<string>('');
-  
+  const kategoriOptions: string[] = ['Kuliah', 'Tugas', 'Organisasi'];
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const API_URL = "http://172.20.10.2:3000/api/tambahkegiatan";
+
+  // Tema dari React Native Paper
+  const theme = useTheme();
+
   // State dan fungsi untuk Menu Kategori
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
   const openMenu = () => setMenuVisible(true);
@@ -53,20 +59,56 @@ const TambahKegiatan: React.FC = () => {
     closeMenu();
   };
 
-  // Tema dari React Native Paper
-  const theme = useTheme();
+  const convertTanggal = (input: string) => {
+    // Dari DD/MM/YYYY → YYYY-MM-DD
+    if (!input.includes("/")) return input;
+    const [dd, mm, yyyy] = input.split("/");
+    return `${yyyy}-${mm}-${dd}`;
+  };
 
-  // --- Fungsi Aksi Tombol ---
-  const handleSimpan = () => {
-    console.log('Data disimpan:', {
-      namaKegiatan,
-      kategori,
-      tanggal,
-      waktuMulai,
-      waktuSelesai,
-      catatan,
-    });
-    alert('Kegiatan berhasil disimpan!');
+  const convertWaktu = (input: string) => {
+    // Jika user input "08:30", MySQL butuh "08:30:00"
+    if (input.length === 5) return input + ":00";
+    return input;
+  };
+
+  const handleSimpan = async () => {
+    if (!nama_kegiatan || !kategori || !tanggal || !waktu_mulai || !waktu_selesai) {
+      alert("Semua field kecuali catatan wajib diisi!");
+      return;
+    }
+
+    const tanggalDB = convertTanggal(tanggal);
+    const mulaiDB = convertWaktu(waktu_mulai);
+    const selesaiDB = convertWaktu(waktu_selesai);
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nama_kegiatan,
+          kategori,
+          tanggal: tanggalDB,
+          waktu_mulai: mulaiDB,
+          waktu_selesai: selesaiDB,
+          catatan: catatan || null
+        }),
+      });
+
+      const data = await response.json();
+      console.log("HASIL API:", data);
+
+      if (data.success) {
+        alert("Kegiatan berhasil disimpan!");
+      } else {
+        alert("Gagal: " + data.message);
+      }
+
+    } catch (error) {
+      console.error("ERR:", error);
+      alert("Terjadi kesalahan saat mengirim data ke server.");
+    }
   };
 
   const handleBatal = () => {
@@ -76,7 +118,7 @@ const TambahKegiatan: React.FC = () => {
   // --------------------------
 
   // Daftar opsi Kategori
-  const kategoriOptions: string[] = ['Pekerjaan', 'Pribadi', 'Edukasi', 'Olahraga', 'Lainnya'];
+  
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -93,7 +135,7 @@ const TambahKegiatan: React.FC = () => {
         {/* Input Nama Kegiatan */}
         <FormRow label="Nama kegiatan">
           <TextInput
-            value={namaKegiatan}
+            value={nama_kegiatan}
             onChangeText={setNamaKegiatan}
             placeholder="Nama kegiatan"
             mode="outlined"
@@ -104,30 +146,46 @@ const TambahKegiatan: React.FC = () => {
 
         {/* Input Kategori (Menggunakan Menu) */}
         <FormRow label="Kategori">
-          <Menu
-            visible={menuVisible}
-            onDismiss={closeMenu}
-            anchor={
-              <Button 
-                mode="outlined" 
-                onPress={openMenu}
-                contentStyle={styles.menuButtonContent}
-                labelStyle={{ color: kategori === 'Pilih opsi' ? 'gray' : theme.colors.onSurface }}
-              >
-                {kategori}
-              </Button>
-            }
-            style={styles.menuStyle}
-          >
-            {kategoriOptions.map((option) => (
-              <Menu.Item 
-                key={option}
-                onPress={() => handleKategoriSelect(option)} 
-                title={option} 
+          <View style={{ position: 'relative' }}>
+            
+            {/* Input Dropdown */}
+            <Button 
+              mode="outlined"
+              onPress={() => setDropdownOpen(!dropdownOpen)}
+              style={styles.dropdownButton}
+              contentStyle={{ justifyContent: 'space-between' }}
+              labelStyle={{ fontSize: 14 }}
+            >
+              {kategori}
+              <Ionicons 
+                name={dropdownOpen ? "chevron-up" : "chevron-down"} 
+                size={16} 
+                style={{ marginLeft: 8 }} 
               />
-            ))}
-          </Menu>
+            </Button>
+
+            {/* LIST OPSI */}
+            {dropdownOpen && (
+              <View style={styles.dropdownList}>
+                {kategoriOptions.map((option) => (
+                  <Button
+                    key={option}
+                    onPress={() => {
+                      setKategori(option);
+                      setDropdownOpen(false);
+                    }}
+                    style={styles.dropdownItem}
+                    labelStyle={{ fontSize: 14, textAlign: 'left' }}
+                    contentStyle={{ justifyContent: 'flex-start' }}
+                  >
+                    {option}
+                  </Button>
+                ))}
+              </View>
+            )}
+          </View>
         </FormRow>
+
 
         {/* Input Tanggal */}
         <FormRow label="Tanggal">
@@ -145,9 +203,9 @@ const TambahKegiatan: React.FC = () => {
         {/* Input Waktu Mulai */}
         <FormRow label="Waktu Mulai">
           <TextInput
-            value={waktuMulai}
+            value={waktu_mulai}
             onChangeText={setWaktuMulai}
-            placeholder="Mulai"
+            placeholder="HH:MM"
             mode="outlined"
             style={styles.textInput}
             dense={true}
@@ -157,9 +215,9 @@ const TambahKegiatan: React.FC = () => {
         {/* Input Waktu Selesai */}
         <FormRow label="Waktu Selesai">
           <TextInput
-            value={waktuSelesai}
+            value={waktu_selesai}
             onChangeText={setWaktuSelesai}
-            placeholder="Selesai"
+            placeholder="HH:MM"
             mode="outlined"
             style={styles.textInput}
             dense={true}
@@ -204,7 +262,7 @@ const TambahKegiatan: React.FC = () => {
        {/* Bottom Navigation */}
             <View style={styles.bottomNav}>
               <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
-              <Link href="/(tabs)/TambahKegiatan"><Ionicons name="briefcase" size={28} /></Link>
+              <Link href="/(tabs)/tambahkegiatan"><Ionicons name="briefcase" size={28} /></Link>
               <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
               <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
               <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
@@ -260,7 +318,32 @@ const styles = StyleSheet.create({
   menuStyle: {
     width: '50%', 
   },
-  
+  dropdownButton: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    height: 40,
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
+
+  dropdownList: {
+    position: 'absolute',
+    top: 45,
+    width: '100%',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    zIndex: 999,
+    elevation: 4,
+  },
+
+  dropdownItem: {
+    justifyContent: 'flex-start',
+    paddingVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -312,4 +395,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default TambahKegiatan;
+export default tambahkegiatan;
