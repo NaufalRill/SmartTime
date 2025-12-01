@@ -4,18 +4,75 @@ import {
   Text, 
   TextInput, 
   TouchableOpacity, 
-  StyleSheet 
+  StyleSheet,
+  Alert,
+  ActivityIndicator
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
-import { Ionicons} from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { Link, useRouter } from "expo-router";
 
 export default function TambahTugasScreen() {
-  const [filter, setFilter] = useState("");
-  const [kesulitan, setKesulitan] = useState("");
-  const [progress, setProgress] = useState(0);
+  const router = useRouter();
 
+  // ============================================
+  // STATE FORM
+  // ============================================
+  const [filter, setFilter] = useState("");
+  const [judul, setJudul] = useState("");
+  const [deskripsi, setDeskripsi] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [kesulitan, setKesulitan] = useState("");
+  const [prioritas, setPrioritas] = useState("");
+  const [progress, setProgress] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  // API Backend kamu
+  const API_URL = "http://172.20.10.5:3000/api/tugas";
+
+  // ============================================
+  // HANDLE SIMPAN TUGAS
+  // ============================================
+  const handleSaveTugas = async () => {
+    if (!judul || !deadline) {
+      Alert.alert("Error", "Judul dan Deadline wajib diisi!");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filter,
+          judul,
+          deskripsi,
+          deadline,
+          kesulitan,
+          prioritas,
+          progress
+        })
+      });
+
+      const json = await response.json();
+
+      if (json.success) {
+        Alert.alert("Sukses", "Tugas berhasil ditambahkan!");
+        router.replace("/(tabs)/pages/home"); // kembali ke home
+      } else {
+        Alert.alert("Gagal", json.message);
+      }
+
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "Tidak dapat terhubung ke server");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <View style={styles.page}>
       {/* Header */}

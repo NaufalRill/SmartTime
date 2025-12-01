@@ -10,7 +10,11 @@ export default function RegisterScreen() {
   const [isLoading, setIsLoading] = useState(false); // State loading
 
   // GANTI IP INI SESUAI KOMPUTER ANDA
+<<<<<<< Updated upstream
   const API_URL = 'http://172.20.10.2:3000/api/register'; 
+=======
+  const API_URL = 'http://172.20.10.5:3000/api/register'; 
+>>>>>>> Stashed changes
 
  const handleRegister = async () => {
     if (!email || !username || !password) {

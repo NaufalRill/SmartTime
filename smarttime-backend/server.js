@@ -106,6 +106,46 @@ db.query(
 
 });
 
+// Route CREATE TUGAS
+app.post('/api/tugas', (req, res) => {
+    const { 
+        filter, 
+        judul, 
+        deskripsi, 
+        deadline, 
+        kesulitan, 
+        prioritas, 
+        progress 
+    } = req.body;
+
+    // Validasi data
+    if (!judul) {
+        return res.status(400).json({ success: false, message: "Judul tugas wajib diisi" });
+    }
+
+    // Query Insert
+    const sql = `
+        INSERT INTO tugas 
+        (filter, judul, deskripsi, deadline, kesulitan, prioritas, progress)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+        sql,
+        [filter, judul, deskripsi, deadline, kesulitan, prioritas, progress],
+        (err, result) => {
+            if (err) return res.status(500).json(err);
+
+            res.json({
+                success: true,
+                message: "Tugas berhasil ditambahkan!",
+                insertedId: result.insertId
+            });
+        }
+    );
+});
+
+
 
 app.listen(PORT, () => {
     console.log(`Server berjalan di http://localhost:${PORT}`);

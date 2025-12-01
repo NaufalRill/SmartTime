@@ -9,7 +9,11 @@ export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false); 
 
 
+<<<<<<< Updated upstream
   const API_URL = 'http://172.20.10.2:3000/api/login'; 
+=======
+  const API_URL = 'http://172.20.10.5:3000/api/login'; 
+>>>>>>> Stashed changes
 
   const handleLogin = async () => {
 
