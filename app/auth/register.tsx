@@ -1,17 +1,68 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { Link } from "expo-router";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import { Link, useRouter } from "expo-router"; // Import useRouter
 
 export default function RegisterScreen() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // State loading
 
-  const handleRegister = () => {
-    console.log("Email:", email);
-    console.log("Username:", username);
-    console.log("Password:", password);
-    // nanti disambungkan ke backend (Laravel / Node / Firebase)
+  // GANTI IP INI SESUAI KOMPUTER ANDA
+  const API_URL = 'http://192.168.1.6:3000/api/register'; 
+
+ const handleRegister = async () => {
+    if (!email || !username || !password) {
+      Alert.alert("Error", "Semua kolom harus diisi!");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      console.log("Mencoba connect ke:", API_URL); // 1. Cek URL di log
+
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          username: username,
+          password: password,
+        }),
+      });
+
+      // --- BAGIAN DEBUGGING (UBAH INI) ---
+      // Jangan langsung .json(), tapi ambil text-nya dulu
+      const textResponse = await response.text(); 
+      console.log("Respon dari server:", textResponse); // <--- LIHAT INI DI TERMINAL
+
+      // Coba parse manual, kalau gagal kita tahu isinya HTML
+      let json;
+      try {
+        json = JSON.parse(textResponse);
+      } catch (e) {
+        Alert.alert("Error Server", "Server mengirim HTML, bukan JSON. Cek terminal/console log.");
+        throw new Error("Server response is not JSON: " + textResponse);
+      }
+      // ------------------------------------
+
+      if (json.success) {
+        Alert.alert("Sukses", "Akun berhasil dibuat!");
+        router.replace("/auth/login");
+      } else {
+        Alert.alert("Gagal", json.message || "Terjadi kesalahan");
+      }
+
+    } catch (error) {
+      console.error("Error Fetch:", error);
+      Alert.alert("Error", "Gagal terhubung. Lihat log console.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -27,6 +78,7 @@ export default function RegisterScreen() {
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
+          keyboardType="email-address" // Tambahan: keyboard khusus email
         />
       </View>
 
@@ -55,8 +107,16 @@ export default function RegisterScreen() {
       </View>
 
       {/* REGISTER BUTTON */}
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Register</Text>
+      <TouchableOpacity 
+        style={[styles.button, isLoading && styles.buttonDisabled]} 
+        onPress={handleRegister}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+            <ActivityIndicator color="#fff" />
+        ) : (
+            <Text style={styles.buttonText}>Register</Text>
+        )}
       </TouchableOpacity>
 
       {/* GO TO LOGIN */}
@@ -73,6 +133,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 30,
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 35,
@@ -100,6 +161,10 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 25,
     marginTop: 20,
+    alignItems: 'center', // Agar loading spinner di tengah
+  },
+  buttonDisabled: {
+    backgroundColor: "#ccc",
   },
   buttonText: {
     color: "#fff",

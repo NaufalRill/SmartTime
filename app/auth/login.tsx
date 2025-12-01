@@ -1,14 +1,57 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { Link } from "expo-router";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
+import { Link, useRouter } from "expo-router"; 
 
 export default function LoginScreen() {
+  const router = useRouter(); 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false); 
 
-  const handleLogin = () => {
-    console.log("Username:", username);
-    console.log("Password:", password);
+
+  const API_URL = 'http://192.168.1.6:3000/api/login'; 
+
+  const handleLogin = async () => {
+
+    if (!username || !password) {
+      Alert.alert("Error", "Username dan Password tidak boleh kosong");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+ 
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      });
+
+      const json = await response.json();
+
+      if (json.success) {
+  
+        Alert.alert("Sukses", json.message);
+        
+
+        router.replace('/(tabs)/pages/home'); 
+      } else {
+
+        Alert.alert("Gagal", json.message);
+      }
+
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Gagal terhubung ke server. Cek IP Address!");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -22,6 +65,7 @@ export default function LoginScreen() {
           placeholder="Username"
           value={username}
           onChangeText={setUsername}
+          autoCapitalize="none" 
         />
       </View>
 
@@ -36,8 +80,18 @@ export default function LoginScreen() {
         />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Link href="/(tabs)/pages/home" style={styles.buttonText}>Login</Link>
+      {/* Tombol Login */}
+      <TouchableOpacity 
+        style={[styles.button, isLoading && styles.buttonDisabled]} 
+        onPress={handleLogin}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+            <ActivityIndicator color="#fff" />
+        ) : (
+            // Hapus <Link> disini, kita handle navigasi di fungsi handleLogin
+            <Text style={styles.buttonText}>Login</Text>
+        )}
       </TouchableOpacity>
 
       <Text style={styles.footerText}>
@@ -53,6 +107,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 30,
+    backgroundColor: '#fff'
   },
   title: {
     fontSize: 35,
@@ -76,10 +131,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   button: {
-    backgroundColor: "#8D8D8D",
+    backgroundColor: "#8D8D8D", // Bisa diganti #3E2CD2 agar senada
     paddingVertical: 14,
     borderRadius: 25,
     marginTop: 20,
+    alignItems: 'center'
+  },
+  buttonDisabled: {
+    backgroundColor: "#ccc",
   },
   buttonText: {
     color: "#fff",
