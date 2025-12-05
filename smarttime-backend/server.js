@@ -107,7 +107,7 @@ db.query(
 });
 
 // Route CREATE TUGAS
-app.post('/api/tugas', (req, res) => {
+app.post('/api/tambahtugas', (req, res) => {
     const { 
         filter, 
         judul, 
@@ -125,7 +125,7 @@ app.post('/api/tugas', (req, res) => {
 
     // Query Insert
     const sql = `
-        INSERT INTO tugas 
+        INSERT INTO tambahtugas 
         (filter, judul, deskripsi, deadline, kesulitan, prioritas, progress)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
@@ -135,6 +135,54 @@ app.post('/api/tugas', (req, res) => {
         [filter, judul, deskripsi, deadline, kesulitan, prioritas, progress],
         (err, result) => {
             if (err) return res.status(500).json(err);
+
+            res.json({
+                success: true,
+                message: "Tugas berhasil ditambahkan!",
+                insertedId: result.insertId
+            });
+        }
+    );
+});
+
+// Route CREATE TUGAS
+app.post('/api/tambahtugas', (req, res) => {
+    const { 
+        filter = null, 
+        judul, 
+        deskripsi = null, 
+        deadline = null, 
+        kesulitan = null, 
+        prioritas = null, 
+        progress = 0 
+    } = req.body;
+
+    // Validasi wajib
+    if (!judul || judul.trim() === "") {
+        return res.status(400).json({
+            success: false,
+            message: "Judul tugas wajib diisi."
+        });
+    }
+
+    // Query Insert
+    const sql = `
+        INSERT INTO tambahtugas 
+        (filter, judul, deskripsi, deadline, kesulitan, prioritas, progress)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+        sql,
+        [filter, judul, deskripsi, deadline, kesulitan, prioritas, progress],
+        (err, result) => {
+            if (err) {
+                console.error("Error INSERT tugas:", err);
+                return res.status(500).json({
+                    success: false,
+                    message: "Gagal menyimpan tugas ke database."
+                });
+            }
 
             res.json({
                 success: true,

@@ -127,7 +127,7 @@ const jenisOptions = ["Pop-Up", "Kalender", "Pesan"];
       <View style={styles.bottomNav}>
         <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
         <Link href="/(tabs)/tambahkegiatan"><Ionicons name="briefcase" size={28} /></Link>
-        <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
+        <Link href="/(tabs)/tambahtugas"><Ionicons name="add-circle-outline" size={36} /></Link>
         <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
         <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
       </View>
