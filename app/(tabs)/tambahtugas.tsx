@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
   StyleSheet,
+  ScrollView,
+  Pressable,
   Alert,
-  ActivityIndicator
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
@@ -16,31 +16,44 @@ import { Link, useRouter } from "expo-router";
 export default function TambahTugasScreen() {
   const router = useRouter();
 
-  // ============================================
-  // STATE FORM
-  // ============================================
-  const [filter, setFilter] = useState("");
   const [judul, setJudul] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
   const [deadline, setDeadline] = useState("");
   const [kesulitan, setKesulitan] = useState("");
   const [prioritas, setPrioritas] = useState("");
   const [progress, setProgress] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  // API Backend kamu
-  const API_URL = "http://172.20.10.5:3000/api/tugas";
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [kesulitanOpen, setKesulitanOpen] = useState(false);
 
-  // ============================================
-  // HANDLE SIMPAN TUGAS
-  // ============================================
-  const handleSaveTugas = async () => {
-    if (!judul || !deadline) {
-      Alert.alert("Error", "Judul dan Deadline wajib diisi!");
+  const filterOptions = ["Tugas", "Kuliah", "Organisasi", "Semua"];
+  const kesulitanOptions = ["Mudah", "Sedang", "Sulit"];
+
+  const closeAllDropdowns = () => {
+    setFilterOpen(false);
+    setKesulitanOpen(false);
+  };
+
+  const API_URL = "http://172.16.60.91:3000/api/tambahtugas";
+
+  // 🔥🔥 FUNGSI SIMPAN KE BACKEND (TIDAK MENGUBAH UI)
+  const handleSave = async () => {
+    if (!judul) {
+      Alert.alert("Error", "Judul tugas wajib diisi!");
+      return;
+    }
+    if (!kesulitan) {
+      Alert.alert("Error", "Pilih tingkat kesulitan!");
+      return;
+    }
+    if (!prioritas) {
+      Alert.alert("Error", "Pilih prioritas!");
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
 
     try {
       const response = await fetch(API_URL, {
@@ -53,352 +66,417 @@ export default function TambahTugasScreen() {
           deadline,
           kesulitan,
           prioritas,
-          progress
-        })
+          progress,
+        }),
       });
 
       const json = await response.json();
 
       if (json.success) {
-        Alert.alert("Sukses", "Tugas berhasil ditambahkan!");
-        router.replace("/(tabs)/pages/home"); // kembali ke home
-      } else {
-        Alert.alert("Gagal", json.message);
-      }
+        Alert.alert("Berhasil", "Tugas berhasil ditambahkan!");
 
+        // Reset form
+        setJudul("");
+        setDeskripsi("");
+        setDeadline("");
+        setKesulitan("");
+        setPrioritas("");
+        setProgress(0);
+        setFilter("");
+
+        router.push("/(tabs)/pages/home");
+      } else {
+        Alert.alert("Gagal", json.message || "Gagal menyimpan tugas.");
+      }
     } catch (error) {
       console.log(error);
-      Alert.alert("Error", "Tidak dapat terhubung ke server");
+      Alert.alert("Error", "Tidak dapat terhubung ke server!");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
+
   return (
-    <View style={styles.page}>
-      {/* Header */}
-      <Text style={styles.title}>Tambah Tugas</Text>
-      <View style={styles.line} />
+    <>
+      <Pressable style={{ flex: 1 }} onPress={closeAllDropdowns}>
+        <ScrollView style={styles.container} nestedScrollEnabled>
+          <Text style={styles.header}>Tambah Tugas</Text>
+          <View style={styles.line} />
 
-      {/* Filter Dropdown */}
-      <View style={styles.filterBox}>
-        <Picker
-          selectedValue={filter}
-          onValueChange={setFilter}
-          style={styles.picker}
-        >
-          <Picker.Item label="Filter" value="" />
-        </Picker>
-        <Ionicons name="chevron-down" size={18} style={styles.dropdownIcon} />
-      </View>
+          {/* FILTER */}
+          <View style={{ marginBottom: 10 }}>
+            <View style={styles.row}>
+              <View style={{ width: "50%" }}>
+                <TouchableOpacity
+                  style={styles.dropdownButton}
+                  activeOpacity={0.9}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setFilterOpen(!filterOpen);
+                    setKesulitanOpen(false);
+                  }}
+                >
+                  <Text style={styles.dropdownButtonText}>
+                    {filter || "Filter"}
+                  </Text>
+                  <Ionicons
+                    name={filterOpen ? "chevron-up" : "chevron-down"}
+                    size={20}
+                    color="#444"
+                  />
+                </TouchableOpacity>
 
-      {/* FORM */}
-      <View style={styles.form}>
-        {/* Judul */}
-        <View style={styles.row}>
-          <Text style={styles.label}>Judul Tugas :</Text>
-          <TextInput style={styles.input} placeholder="Nama tugas" />
-        </View>
+                {filterOpen && (
+                  <View style={styles.dropdownList}>
+                    {filterOptions.map((option) => (
+                      <TouchableOpacity
+                        key={option}
+                        style={styles.dropdownItem}
+                        onPress={() => {
+                          setFilter(option);
+                          setFilterOpen(false);
+                        }}
+                      >
+                        <Text style={styles.dropdownItemText}>{option}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
+            </View>
+          </View>
 
-        {/* Deskripsi */}
-        <View style={styles.row}>
-          <Text style={styles.label}>Deskripsi :</Text>
-          <TextInput style={styles.input} placeholder="Deskripsi" />
-        </View>
-
-        {/* Deadline */}
-        <View style={styles.row}>
-          <Text style={styles.label}>Deadline :</Text>
-          <TextInput style={styles.input} placeholder="DD/MM/YYYY" />
-        </View>
-
-        {/* Kesulitan */}
-        <View style={styles.row}>
-          <Text style={styles.label}>Kesulitan :</Text>
-
-          <View style={styles.inputPickerWrapper}>
-            <Picker
-              selectedValue={kesulitan}
-              onValueChange={setKesulitan}
-              style={styles.inputPicker}
-            >
-              <Picker.Item label="Kesulitan" value="" />
-              <Picker.Item label="Mudah" value="mudah" />
-              <Picker.Item label="Sedang" value="sedang" />
-              <Picker.Item label="Sulit" value="sulit" />
-            </Picker>
-            <Ionicons
-              name="chevron-down"
-              size={18}
-              style={styles.dropdownIconAbsolute}
+          {/* JUDUL */}
+          <View style={styles.formRow}>
+            <Text style={styles.label}>Judul Tugas :</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nama Tugas"
+              value={judul}
+              onChangeText={setJudul}
             />
           </View>
-        </View>
 
-        {/* Prioritas */}
-<View style={{ marginTop: 10 }}>
-  <View style={styles.priorityHeader}>
-    <Text style={styles.label}>Prioritas :</Text>
+          {/* DESKRIPSI */}
+          <View style={styles.formRow}>
+            <Text style={styles.label}>Deskripsi :</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Deskripsi"
+              value={deskripsi}
+              onChangeText={setDeskripsi}
+            />
+          </View>
 
-    <View style={styles.priorityRow}>
-      <TouchableOpacity
-        style={[styles.priorityButton]}
-      >
-        <Text style={styles.priorityText}>Urgent</Text>
-      </TouchableOpacity>
+          {/* DEADLINE */}
+          <View style={styles.formRow}>
+            <Text style={styles.label}>Deadline :</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="DD/MM/YYYY"
+              value={deadline}
+              onChangeText={setDeadline}
+            />
+          </View>
 
-      <TouchableOpacity
-        style={[styles.priorityButton]}
-      >
-        <Text style={styles.priorityText}>Sedang</Text>
-      </TouchableOpacity>
+          {/* KESULITAN */}
+          <View style={styles.formRow}>
+            <Text style={styles.label}>Kesulitan :</Text>
 
-      <TouchableOpacity
-        style={[styles.priorityButton]}
-      >
-        <Text style={styles.priorityText}>Rendah</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</View>
+            <TouchableOpacity
+              style={[styles.input, styles.dropdownButton]}
+              onPress={(e) => {
+                e.stopPropagation();
+                setKesulitanOpen(!kesulitanOpen);
+                setFilterOpen(false);
+              }}
+            >
+              <Text style={styles.dropdownButtonText}>
+                {kesulitan || "Select an option"}
+              </Text>
+              <Ionicons
+                name={kesulitanOpen ? "chevron-up" : "chevron-down"}
+                size={20}
+                color="#444"
+              />
+            </TouchableOpacity>
 
-        {/* Progress */}
-        <View style={styles.progressHeader}>
-          <Text style={styles.label}>Progress :</Text>
-          <Text style={styles.progressValue}>{progress}%</Text>
-        </View>
+            {kesulitanOpen && (
+              <View style={[styles.dropdownList, { width: "65%", right: 0 }]}>
+                {kesulitanOptions.map((option) => (
+                  <TouchableOpacity
+                    key={option}
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setKesulitan(option);
+                      setKesulitanOpen(false);
+                    }}
+                  >
+                    <Text style={styles.dropdownItemText}>{option}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
 
-        <Slider
-          style={{ width: "100%", height: 40 }}
-          minimumValue={0}
-          maximumValue={100}
-          value={progress}
-          onValueChange={(v) => setProgress(Math.floor(v))}
-          minimumTrackTintColor="#E63946"
-          maximumTrackTintColor="#D9D9D9"
-          thumbTintColor="#E63946"
-        />
+          {/* PRIORITAS */}
+          <View style={[styles.formRow, { alignItems: "flex-start" }]}>
+            <Text style={styles.label}>Prioritas :</Text>
 
-        <Text style={styles.progressInfo}>Geser untuk menyesuaikan</Text>
+            <View style={{ width: "65%" }}>
+              {["Urgent", "Sedang", "Rendah"].map((item) => (
+                <TouchableOpacity
+                  key={item}
+                  style={styles.radioItem}
+                  onPress={() => setPrioritas(item)}
+                >
+                  <View style={styles.radioOuter}>
+                    {prioritas === item && <View style={styles.radioInner} />}
+                  </View>
+                  <Text style={styles.radioLabel}>{item}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
 
-        {/* Buttons */}
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.cancelBtn}>
-            <Text style={styles.btnText}>Batal</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.saveBtn}>
-            <Text style={styles.btnText}>Simpan</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+          {/* PROGRESS */}
+          <View style={styles.progressRow}>
+            <Text style={styles.label}>Progress :</Text>
+            <Text style={styles.percent}>{progress}%</Text>
+          </View>
 
-      {/* Bottom Nav */}
+          <Slider
+            value={progress}
+            minimumValue={0}
+            maximumValue={100}
+            minimumTrackTintColor="#E53935"
+            thumbTintColor="#E53935"
+            onValueChange={(value) => setProgress(Math.round(value))}
+          />
+
+          <Text style={styles.sliderText}>Geser untuk menyesuaikan</Text>
+
+          {/* BUTTONS */}
+          <View style={styles.btnRow}>
+            <TouchableOpacity
+              style={styles.btnCancel}
+              onPress={() => {
+                setJudul("");
+                setDeskripsi("");
+                setDeadline("");
+                setKesulitan("");
+                setPrioritas("");
+                setProgress(0);
+                setFilter("");
+                closeAllDropdowns();
+              }}
+            >
+              <Text style={styles.btnText}>Batal</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.btnSave} onPress={handleSave}>
+              <Text style={styles.btnText}>
+                {isLoading ? "..." : "Simpan"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ height: 150 }} />
+        </ScrollView>
+      </Pressable>
+
+      {/* NAV BAWAH */}
       <View style={styles.bottomNav}>
-        <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
-        <Link href="/(tabs)/tambahkegiatan"><Ionicons name="briefcase" size={28} /></Link>
-        <Link href="/(tabs)/tambah_tugas"><Ionicons name="add-circle-outline" size={36} /></Link>
-        <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
-        <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
+        <Link href="/(tabs)/pages/home">
+          <Ionicons name="home" size={28} />
+        </Link>
+        <Link href="/(tabs)/tambahkegiatan">
+          <Ionicons name="briefcase" size={28} />
+        </Link>
+        <Link href="/(tabs)/tambahtugas">
+          <Ionicons name="add-circle-outline" size={36} />
+        </Link>
+        <Link href="/(tabs)/pages/notifikasi">
+          <Ionicons name="notifications" size={28} />
+        </Link>
+        <Link href="/(tabs)/pages/PengaturanReminder">
+          <Ionicons name="settings" size={28} />
+        </Link>
       </View>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    paddingTop: 50,
-    alignItems: "center",
+  container: {
+    backgroundColor: "#fff",
+    padding: 20,
   },
 
-  /* TITLE */
-  title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "#5B3FD3",
+  header: {
+    fontSize: 34,
+    fontWeight: "700",
+    textAlign: "center",
+    color: "#3F2B96",
+    marginTop: 60,
   },
 
   line: {
-    width: "100%",
     height: 2,
-    backgroundColor: "#E5D9FA",
-    marginTop: 8,
-    marginBottom: 12,
-  },
-
-  /* FILTER */
-  filterBox: {
-    width: 110,
-    height: 27,
-    backgroundColor: "#F3F3F3",
-    borderRadius: 7,
-    borderColor: "#D0D0D0",
-    borderWidth: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingLeft: 6,
-    marginBottom: 18,
-    alignSelf: "flex-start",
-    marginLeft: 20,
-  },
-
-  picker: {
-    width: "100%",
-    height: 28,
-    fontSize: 11,
-  },
-
-  dropdownIcon: {
-    position: "absolute",
-    right: 6,
-    top: 7,
-    color: "gray",
-    fontSize: 13,
-  },
-
-  /* FORM */
-  form: {
-    width: "88%",
-  },
-
-  row: {
-    marginBottom: 8,
+    backgroundColor: "#E6D6F7",
+    marginHorizontal: 0,
+    marginTop: 10,
+    marginBottom: 25,
   },
 
   label: {
-    fontSize: 13,
-    fontWeight: "600",
-    marginBottom: 3,
+    width: "35%",
+    fontSize: 18,
+    fontWeight: "500",
+  },
+
+  formRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 18,
+    width: "100%",
   },
 
   input: {
-    width: "100%",
+    width: "65%",
     borderWidth: 1,
-    borderColor: "#C9C9C9",
-    borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    backgroundColor: "#F8F8F8",
-    fontSize: 13,
-    height: 36,
+    borderColor: "#ccc",
+    padding: 12,
+    borderRadius: 12,
+    marginTop: 0,
   },
 
-  /* PICKER INSIDE FORM */
-  inputPickerWrapper: {
+  row: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+
+  dropdownButton: {
     borderWidth: 1,
-    borderColor: "#C9C9C9",
-    borderRadius: 8,
+    borderColor: "#ccc",
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
     backgroundColor: "#F8F8F8",
-    height: 36,
-    justifyContent: "center",
-  },
-
-  inputPicker: {
-    width: "100%",
-    height: 36,
-    fontSize: 13,
-  },
-
-  dropdownIconAbsolute: {
-    position: "absolute",
-    right: 8,
-    top: 10,
-    color: "gray",
-    fontSize: 14,
-  },
-
-  /* PRIORITAS — UPDATED */
-  priorityHeader: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
   },
 
-  priorityRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 8,
-    gap: 6,
-  },
-
-  priorityButton: {
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    backgroundColor: "#EDEDED",
-    borderRadius: 6,
-  },
-
-  priorityText: {
-    fontSize: 11,
+  dropdownButtonText: {
+    fontSize: 16,
     color: "#333",
   },
 
-  /* RADIO (tidak dipakai lagi) */
-  radioRow: {
-    display: "none",
+  dropdownList: {
+    position: "absolute",
+    top: 48,
+    width: "100%",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    zIndex: 20,
+    elevation: 6,
   },
 
-  /* PROGRESS */
-  progressHeader: {
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderColor: "#eee",
+  },
+
+  dropdownItemText: {
+    fontSize: 16,
+    color: "#333",
+  },
+
+  radioItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 14,
+  },
+
+  radioOuter: {
+    width: 22,
+    height: 22,
+    borderRadius: 22,
+    borderWidth: 2,
+    borderColor: "#3F2B96",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+
+  radioInner: {
+    width: 12,
+    height: 12,
+    backgroundColor: "#3F2B96",
+    borderRadius: 12,
+  },
+
+  radioLabel: {
+    fontSize: 18,
+  },
+
+  progressRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 8,
+    marginTop: 25,
   },
 
-  progressValue: {
-    fontSize: 17,
-    fontWeight: "bold",
-    color: "#000",
+  percent: {
+    fontSize: 20,
+    fontWeight: "700",
   },
 
-  progressInfo: {
+  sliderText: {
     textAlign: "center",
-    marginBottom: 18,
-    fontSize: 12.5,
-    color: "#444",
+    marginTop: 10,
+    fontSize: 16,
   },
 
-  /* BUTTONS */
-  buttonRow: {
+  btnRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginTop: 35,
   },
 
-  cancelBtn: {
-    backgroundColor: "#5038D3",
-    paddingVertical: 9,
-    borderRadius: 10,
-    width: "47%",
+  btnCancel: {
+    backgroundColor: "#3F2B96",
+    paddingVertical: 14,
+    paddingHorizontal: 45,
+    borderRadius: 15,
   },
 
-  saveBtn: {
-    backgroundColor: "#5038D3",
-    paddingVertical: 9,
-    borderRadius: 10,
-    width: "47%",
+  btnSave: {
+    backgroundColor: "#3F2B96",
+    paddingVertical: 14,
+    paddingHorizontal: 45,
+    borderRadius: 15,
   },
 
   btnText: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontWeight: "bold",
-    textAlign: "center",
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
   },
 
-  /* NAVBAR */
   bottomNav: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 70,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderColor: "#ddd",
     flexDirection: "row",
     justifyContent: "space-around",
-    alignItems: "center",
+    paddingVertical: 12,
+    backgroundColor: "#ffffff",
+    borderTopWidth: 1,
+    borderColor: "#ddd",
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
   },
 });
-
-

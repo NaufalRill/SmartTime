@@ -1,13 +1,13 @@
-CREATE TABLE tugas (
+CREATE TABLE tambahtugas (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    filter VARCHAR(50) DEFAULT NULL,
-    judul VARCHAR(150) NOT NULL,
+    judul VARCHAR(255) NOT NULL,
     deskripsi TEXT,
-    deadline DATE DEFAULT NULL,
-    kesulitan ENUM('mudah', 'sedang', 'sulit') DEFAULT NULL,
-    prioritas ENUM('urgent', 'sedang', 'rendah') DEFAULT NULL,
-    progress TINYINT(3) DEFAULT 0,
-
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    deadline DATE,
+    kesulitan ENUM('Mudah', 'Sedang', 'Sulit') NOT NULL,
+    prioritas ENUM('Urgent', 'Sedang', 'Rendah') NOT NULL,
+    progress INT DEFAULT 0
 );
+
+
+
+ALTER TABLE tambahtugas ADD COLUMN filter VARCHAR(100);
