@@ -103,46 +103,6 @@ db.query(
         res.json({ success: true, message: "Kegiatan berhasil ditambahkan!" });
     }
 );
-
-});
-
-// Route CREATE TUGAS
-app.post('/api/tambahtugas', (req, res) => {
-    const { 
-        filter, 
-        judul, 
-        deskripsi, 
-        deadline, 
-        kesulitan, 
-        prioritas, 
-        progress 
-    } = req.body;
-
-    // Validasi data
-    if (!judul) {
-        return res.status(400).json({ success: false, message: "Judul tugas wajib diisi" });
-    }
-
-    // Query Insert
-    const sql = `
-        INSERT INTO tambahtugas 
-        (filter, judul, deskripsi, deadline, kesulitan, prioritas, progress)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    db.query(
-        sql,
-        [filter, judul, deskripsi, deadline, kesulitan, prioritas, progress],
-        (err, result) => {
-            if (err) return res.status(500).json(err);
-
-            res.json({
-                success: true,
-                message: "Tugas berhasil ditambahkan!",
-                insertedId: result.insertId
-            });
-        }
-    );
 });
 
 // Route CREATE TUGAS
@@ -193,6 +153,51 @@ app.post('/api/tambahtugas', (req, res) => {
     );
 });
 
+// Route CREATE PENGINGAT (Sesuai Struktur Tabel)
+app.post('/api/tambahpengingat', (req, res) => {
+    const { namatugas, jam, menit, tanggal, frekuensi, jenis_pengingat } = req.body;
+
+    // Validasi wajib
+    if (!namatugas || jam === undefined || menit === undefined || !tanggal || !frekuensi || !jenis_pengingat) {
+        return res.status(400).json({
+            success: false,
+            message: "Semua field wajib diisi!"
+        });
+    }
+
+    // Normalisasi tanggal (DD/MM/YYYY → YYYY-MM-DD)
+    let formatTanggal = tanggal;
+    if (tanggal.includes("/")) {
+        const [dd, mm, yyyy] = tanggal.split("/");
+        formatTanggal = `${yyyy}-${mm}-${dd}`;
+    }
+
+    const sql = `
+        INSERT INTO tambahpengingat 
+        (namatugas, jam, menit, tanggal, frekuensi, jenis_pengingat)
+        VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+        sql,
+        [namatugas, jam, menit, formatTanggal, frekuensi, jenis_pengingat],
+        (err, result) => {
+            if (err) {
+                console.error("Error INSERT pengingat:", err);
+                return res.status(500).json({
+                    success: false,
+                    message: "Gagal menyimpan pengingat ke database."
+                });
+            }
+
+            res.json({
+                success: true,
+                message: "Pengingat berhasil ditambahkan!",
+                insertedId: result.insertId
+            });
+        }
+    );
+});
 
 
 app.listen(PORT, () => {
