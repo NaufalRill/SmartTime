@@ -5,13 +5,12 @@ import {
   TextInput, 
   Button, 
   Text, 
-  Menu, 
-  Divider,
   useTheme 
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons'; 
-import { Link } from "expo-router";
+
+import { BottomNav } from "@/components/bottomnav";
 
 
 // 1. Definisikan tipe Props untuk komponen kustom
@@ -43,7 +42,8 @@ const tambahkegiatan: React.FC = () => {
   const [catatan, setCatatan] = useState<string>('');
   const kategoriOptions: string[] = ['Kuliah', 'Tugas', 'Organisasi'];
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const API_URL = "http://172.20.10.2:3000/api/tambahkegiatan";
+
+  const API_URL = "http://192.168.1.3:3000/api/tambahkegiatan";
 
   // Tema dari React Native Paper
   const theme = useTheme();
@@ -260,13 +260,7 @@ const tambahkegiatan: React.FC = () => {
       </ScrollView>
 
        {/* Bottom Navigation */}
-            <View style={styles.bottomNav}>
-              <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
-              <Link href="/(tabs)/tambahkegiatan"><Ionicons name="briefcase" size={28} /></Link>
-              <Link href="/(tabs)/tambahtugas"><Ionicons name="add-circle-outline" size={36} /></Link>
-              <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
-              <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
-            </View>
+      <BottomNav />
     </SafeAreaView>
   );
 };
@@ -367,19 +361,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-   bottomNav: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 70,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderColor: "#ddd",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
+
   navItem: {
     flex: 1,
     alignItems: 'center',

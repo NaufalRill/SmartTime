@@ -29,7 +29,7 @@ export default function TambahTugasScreen() {
   const [loading, setLoading] = useState(false);
 
   // API Backend kamu
-  const API_URL = "http://172.20.10.5:3000/api/tugas";
+  const API_URL = "http://192.168.1.3:3000/api/tugas";
 
   // ============================================
   // HANDLE SIMPAN TUGAS

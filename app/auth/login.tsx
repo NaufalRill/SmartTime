@@ -8,7 +8,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false); 
 
-  const API_URL = 'http://172.16.60.91:3000/api/login'; 
+  const API_URL = 'http://192.168.1.3:3000/api/login'; 
 
 
   const handleLogin = async () => {

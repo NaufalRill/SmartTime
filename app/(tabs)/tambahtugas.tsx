@@ -11,7 +11,8 @@ import {
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
+import { BottomNav } from "@/components/bottomnav";
 
 export default function TambahTugasScreen() {
   const router = useRouter();
@@ -36,7 +37,7 @@ export default function TambahTugasScreen() {
     setKesulitanOpen(false);
   };
 
-  const API_URL = "http://172.16.60.91:3000/api/tambahtugas";
+  const API_URL = "http://192.168.1.3:3000/api/tambahtugas";
 
   // 🔥🔥 FUNGSI SIMPAN KE BACKEND (TIDAK MENGUBAH UI)
   const handleSave = async () => {
@@ -286,23 +287,7 @@ export default function TambahTugasScreen() {
       </Pressable>
 
       {/* NAV BAWAH */}
-      <View style={styles.bottomNav}>
-        <Link href="/(tabs)/pages/home">
-          <Ionicons name="home" size={28} />
-        </Link>
-        <Link href="/(tabs)/tambahkegiatan">
-          <Ionicons name="briefcase" size={28} />
-        </Link>
-        <Link href="/(tabs)/tambahtugas">
-          <Ionicons name="add-circle-outline" size={36} />
-        </Link>
-        <Link href="/(tabs)/pages/notifikasi">
-          <Ionicons name="notifications" size={28} />
-        </Link>
-        <Link href="/(tabs)/pages/PengaturanReminder">
-          <Ionicons name="settings" size={28} />
-        </Link>
-      </View>
+      <BottomNav />
     </>
   );
 }
@@ -468,15 +453,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingVertical: 12,
-    backgroundColor: "#ffffff",
-    borderTopWidth: 1,
-    borderColor: "#ddd",
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-  },
+
 });
