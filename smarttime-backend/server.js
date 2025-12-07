@@ -155,10 +155,10 @@ app.post('/api/tambahtugas', (req, res) => {
 
 // Route CREATE PENGINGAT (Sesuai Struktur Tabel)
 app.post('/api/tambahpengingat', (req, res) => {
-    const { namatugas, jam, menit, tanggal, frekuensi, jenis_pengingat } = req.body;
+    const { nama_tugas, jam, menit, tanggal, frekuensi, jenis_pengingat } = req.body;
 
     // Validasi wajib
-    if (!namatugas || jam === undefined || menit === undefined || !tanggal || !frekuensi || !jenis_pengingat) {
+    if (!nama_tugas || jam === undefined || menit === undefined || !tanggal || !frekuensi || !jenis_pengingat) {
         return res.status(400).json({
             success: false,
             message: "Semua field wajib diisi!"
@@ -174,13 +174,13 @@ app.post('/api/tambahpengingat', (req, res) => {
 
     const sql = `
         INSERT INTO tambahpengingat 
-        (namatugas, jam, menit, tanggal, frekuensi, jenis_pengingat)
+        (nama_tugas, jam, menit, tanggal, frekuensi, jenis_pengingat)
         VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     db.query(
         sql,
-        [namatugas, jam, menit, formatTanggal, frekuensi, jenis_pengingat],
+        [nama_tugas, jam, menit, formatTanggal, frekuensi, jenis_pengingat],
         (err, result) => {
             if (err) {
                 console.error("Error INSERT pengingat:", err);
@@ -197,6 +197,28 @@ app.post('/api/tambahpengingat', (req, res) => {
             });
         }
     );
+});
+
+
+app.get('/api/tugas', (req, res) => {
+    // Kita urutkan berdasarkan deadline agar yang paling mepet muncul duluan
+    const sql = `SELECT * FROM tambahtugas ORDER BY deadline ASC`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error("Error SELECT tugas:", err);
+            return res.status(500).json({
+                success: false,
+                message: "Gagal mengambil tugas dari database."
+            });
+        }
+
+        // Kirim hasil data (array of objects) ke frontend
+        res.json({
+            success: true,
+            data: result 
+        });
+    });
 });
 
 

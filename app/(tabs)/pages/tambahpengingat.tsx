@@ -12,6 +12,7 @@ import {
   Alert,
 } from "react-native";
 import { BottomNav } from "@/components/bottomnav";
+import api from "../../service/api";  
 
 export default function TambahPengingat() {
   const router = useRouter();
@@ -31,7 +32,6 @@ export default function TambahPengingat() {
   const [tanggal, setTanggal] = useState("");
 
   // === API URL ===
-  const API_URL = "http://172.16.60.91:3000/api/tambahpengingat";
 
   // ================================================================
   //   PERBAIKAN FORMAT TANGGAL TANPA MERUBAH TAMPILAN
@@ -82,27 +82,24 @@ export default function TambahPengingat() {
     }
 
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          namatugas: namaTugas,
-          jam: parseInt(jam),
-          menit: parseInt(menit),
-          tanggal: formattedDate,
-          frekuensi,
-          jenis_pengingat: jenisPengingat,
-        }),
-      });
 
-      const json = await response.json();
+      const response = await api.post('/tambahpengingat', {
+      nama_tugas: namaTugas,
+      jam: parseInt(jam),
+      menit: parseInt(menit),
+      tanggal: formattedDate,
+      frekuensi,
+      jenis_pengingat: jenisPengingat,
+  });
+      
 
-      if (json.success) {
-        Alert.alert("Sukses", "Pengingat berhasil ditambahkan!");
-        router.push("/(tabs)/pages/home");
-      } else {
-        Alert.alert("Gagal", json.message);
-      }
+      if (response.data.success) {
+            console.log("Berhasil:", response.data.message);
+            Alert.alert("Berhasil", "Pengingat berhasil ditambahkan!");
+            router.push("/(tabs)/pages/home");
+            } else {
+              Alert.alert("Gagal", response.data.fail || "Gagal menyimpan pengingat.");
+            }
     } catch (error) {
       console.log(error);
       Alert.alert("Error", "Tidak dapat terhubung ke server");

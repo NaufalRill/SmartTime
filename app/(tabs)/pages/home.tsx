@@ -1,13 +1,52 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import { Link } from "expo-router";
+import { Link, useFocusEffect } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
+import React, { useState, useCallback } from 'react';
+import api from '../../service/api';
+
+interface Task {
+  id?: number;
+  judul: string;
+  deadline: string;
+  progress: number;
+}
 
 export default function HomeScreen() {
-  const tasks = [
-    { title: "Rekayasa Interaksi", due: "1 hari lagi", progress: 0.6 },
-    { title: "Pra Skripsi", due: "5 hari lagi", progress: 0.4 },
-    { title: "Praktikum PKPL", due: "14 hari lagi", progress: 0.2 },
-  ];
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+
+  const fetchTasks = async () => {
+    try {
+      const response = await api.get('/tugas');
+      const json = response.data;
+
+      if (json.success) {
+        setTasks(json.data);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+    useFocusEffect(
+    useCallback(() => {
+      fetchTasks();
+    }, [])
+  );
+
+    const calculateDaysLeft = (deadlineDate : string) => {
+      if (!deadlineDate) return "Tanpa Tanggal";
+
+      const today = new Date();
+      const due = new Date(deadlineDate);
+      const timeDiff = due.getTime() - today.getTime();
+      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+      if (daysDiff < 0) return ( <Text style={{ color: 'red' }}>Tanggal Terlewat</Text> );
+      if (daysDiff === 0) return ( <Text style={{ color: 'red' }}>Deadline Hari Ini</Text> );
+      return `${daysDiff} Hari Lagi`;
+    };
+  
 
   return (
     <View style={styles.container}>
@@ -27,19 +66,19 @@ export default function HomeScreen() {
       <ScrollView style={{ marginTop: 10 }}>
         {tasks.map((item, index) => (
           <View key={index} style={styles.card}>
-            <Link href="/(tabs)/pages/detail-tugas" style={styles.cardTitle}>{item.title}</Link>
-            <Text style={styles.cardSub}>{item.due}</Text>
+            <Link href="/(tabs)/pages/detail-tugas" style={styles.cardTitle}>{item.judul}</Link>
+            <Text style={styles.cardSub}>
+              {calculateDaysLeft(item.deadline)}
+            </Text>
 
             {/* Progress Bar */}
             <View style={styles.progressBg}>
-              <View style={[styles.progressFill, { width: `${item.progress * 100}%` }]} />
+              <View style={[styles.progressFill, { width: `${item.progress }%` }]} />
             </View>
           </View>
 
 
         ))}
-
-        
 
       </ScrollView>
 

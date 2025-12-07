@@ -8,18 +8,21 @@ import {
   ScrollView,
   Pressable,
   Alert,
+  Platform,
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import api from '../service/api';
 
 export default function TambahTugasScreen() {
   const router = useRouter();
 
   const [judul, setJudul] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
-  const [deadline, setDeadline] = useState("");
+
   const [kesulitan, setKesulitan] = useState("");
   const [prioritas, setPrioritas] = useState("");
   const [progress, setProgress] = useState(0);
@@ -37,57 +40,53 @@ export default function TambahTugasScreen() {
     setKesulitanOpen(false);
   };
 
-  const API_URL = "http://192.168.1.3:3000/api/tambahtugas";
 
-  // 🔥🔥 FUNGSI SIMPAN KE BACKEND (TIDAK MENGUBAH UI)
-  const handleSave = async () => {
+  const [deadline, setDeadline] = useState(new Date()); 
+  const [showPicker, setShowPicker] = useState(false);
+
+  // 3. Tambahkan fungsi helper untuk handle perubahan tanggal
+  const onChangeDate = (event: any, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowPicker(false); // Tutup picker di Android setelah memilih
+    }
+    if (selectedDate) {
+      setDeadline(selectedDate);
+    }
+  };
+
+
+const handleSave = async () => {
     if (!judul) {
       Alert.alert("Error", "Judul tugas wajib diisi!");
       return;
     }
-    if (!kesulitan) {
-      Alert.alert("Error", "Pilih tingkat kesulitan!");
-      return;
-    }
-    if (!prioritas) {
-      Alert.alert("Error", "Pilih prioritas!");
-      return;
-    }
+    // (Validasi lain tetap sama...)
 
     setIsLoading(true);
 
+    // --- PERBAIKAN UTAMA DISINI ---
+    // Ubah format Date Javascript menjadi String "YYYY-MM-DD" untuk MySQL
+    const formattedDeadline = deadline.toISOString().split('T')[0];
+    // -----------------------------
+
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          filter,
-          judul,
-          deskripsi,
-          deadline,
-          kesulitan,
-          prioritas,
-          progress,
-        }),
-      });
+     
+      const response = await api.post('/tambahtugas', {
+      filter,
+      judul,
+      deskripsi,
+      deadline: formattedDeadline, // Tetap kirim variable yang diformat
+      kesulitan,
+      prioritas,
+      progress,
+  });
 
-      const json = await response.json();
-
-      if (json.success) {
-        Alert.alert("Berhasil", "Tugas berhasil ditambahkan!");
-
-        // Reset form
-        setJudul("");
-        setDeskripsi("");
-        setDeadline("");
-        setKesulitan("");
-        setPrioritas("");
-        setProgress(0);
-        setFilter("");
-
-        router.push("/(tabs)/pages/home");
+      if (response.data.success) {
+      console.log("Berhasil:", response.data.message);
+      Alert.alert("Berhasil", "Tugas berhasil ditambahkan!");
+      router.push("/(tabs)/pages/home");
       } else {
-        Alert.alert("Gagal", json.message || "Gagal menyimpan tugas.");
+        Alert.alert("Gagal", response.data.fail || "Gagal menyimpan tugas.");
       }
     } catch (error) {
       console.log(error);
@@ -172,12 +171,28 @@ export default function TambahTugasScreen() {
           {/* DEADLINE */}
           <View style={styles.formRow}>
             <Text style={styles.label}>Deadline :</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="DD/MM/YYYY"
-              value={deadline}
-              onChangeText={setDeadline}
-            />
+            {/* Ganti TextInput dengan TouchableOpacity (Tombol) */}
+            <TouchableOpacity 
+              style={styles.input} // Gunakan style input yang sama agar tampilan konsisten
+              onPress={() => setShowPicker(true)}
+            >
+              {/* Tampilkan tanggal format Indonesia untuk User */}
+              <Text style={{ marginTop: 5 }}>
+                {deadline.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Munculkan Picker jika showPicker true */}
+            {showPicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={deadline}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={onChangeDate}
+              />
+            )}
           </View>
 
           {/* KESULITAN */}
@@ -264,7 +279,7 @@ export default function TambahTugasScreen() {
               onPress={() => {
                 setJudul("");
                 setDeskripsi("");
-                setDeadline("");
+                setDeadline(new Date());
                 setKesulitan("");
                 setPrioritas("");
                 setProgress(0);

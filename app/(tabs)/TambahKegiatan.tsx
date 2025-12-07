@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, Alert } from 'react-native';
 import { 
   Appbar, 
   TextInput, 
@@ -8,10 +8,12 @@ import {
   useTheme 
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from "expo-router";
 
 import { BottomNav } from "@/components/bottomnav";
-
+// IMPORT API CENTRALIZED (Pastikan path ini sesuai dengan file api.ts Anda)
+import api from '../service/api'; 
 
 // 1. Definisikan tipe Props untuk komponen kustom
 interface FormRowProps {
@@ -19,8 +21,7 @@ interface FormRowProps {
   children: React.ReactNode;
 }
 
-// Komponen kustom untuk setiap baris input (Nama, Kategori, dll.)
-// Menambahkan tipe Props ke FormRow
+// Komponen kustom untuk setiap baris input
 const FormRow: React.FC<FormRowProps> = ({ label, children }) => {
   return (
     <View style={styles.formRow}>
@@ -32,33 +33,23 @@ const FormRow: React.FC<FormRowProps> = ({ label, children }) => {
   );
 };
 
-const tambahkegiatan: React.FC = () => {
-  // 2. State dengan tipe eksplisit
+const TambahKegiatan: React.FC = () => {
+  const router = useRouter();
+  const theme = useTheme();
+
+  // 2. State Management
   const [nama_kegiatan, setNamaKegiatan] = useState<string>('');
   const [kategori, setKategori] = useState<string>('Pilih opsi');
   const [tanggal, setTanggal] = useState<string>(''); 
   const [waktu_mulai, setWaktuMulai] = useState<string>(''); 
   const [waktu_selesai, setWaktuSelesai] = useState<string>(''); 
   const [catatan, setCatatan] = useState<string>('');
-  const kategoriOptions: string[] = ['Kuliah', 'Tugas', 'Organisasi'];
+  
+  // Dropdown state
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const kategoriOptions: string[] = ['Kuliah', 'Tugas', 'Organisasi'];
 
-  const API_URL = "http://192.168.1.3:3000/api/tambahkegiatan";
-
-  // Tema dari React Native Paper
-  const theme = useTheme();
-
-  // State dan fungsi untuk Menu Kategori
-  const [menuVisible, setMenuVisible] = useState<boolean>(false);
-  const openMenu = () => setMenuVisible(true);
-  const closeMenu = () => setMenuVisible(false);
-
-  // 3. Fungsi handler dengan tipe parameter eksplisit
-  const handleKategoriSelect = (selectedKategori: string) => {
-    setKategori(selectedKategori);
-    closeMenu();
-  };
-
+  // 3. Helper Functions
   const convertTanggal = (input: string) => {
     // Dari DD/MM/YYYY → YYYY-MM-DD
     if (!input.includes("/")) return input;
@@ -72,9 +63,11 @@ const tambahkegiatan: React.FC = () => {
     return input;
   };
 
+  // 4. Handle Submit dengan AXIOS
   const handleSimpan = async () => {
-    if (!nama_kegiatan || !kategori || !tanggal || !waktu_mulai || !waktu_selesai) {
-      alert("Semua field kecuali catatan wajib diisi!");
+    // Validasi sederhana
+    if (!nama_kegiatan || kategori === 'Pilih opsi' || !tanggal || !waktu_mulai || !waktu_selesai) {
+      Alert.alert("Peringatan", "Semua field (kecuali catatan) wajib diisi!");
       return;
     }
 
@@ -83,46 +76,41 @@ const tambahkegiatan: React.FC = () => {
     const selesaiDB = convertWaktu(waktu_selesai);
 
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nama_kegiatan,
-          kategori,
-          tanggal: tanggalDB,
-          waktu_mulai: mulaiDB,
-          waktu_selesai: selesaiDB,
-          catatan: catatan || null
-        }),
+      // --- PERUBAHAN UTAMA DISINI ---
+      // Menggunakan api.post, bukan fetch. Tidak perlu URL lengkap.
+      const response = await api.post('/tambahkegiatan', {
+        nama_kegiatan,
+        kategori,
+        tanggal: tanggalDB,
+        waktu_mulai: mulaiDB,
+        waktu_selesai: selesaiDB,
+        catatan: catatan || null
       });
 
-      const data = await response.json();
-      console.log("HASIL API:", data);
-
-      if (data.success) {
-        alert("Kegiatan berhasil disimpan!");
+      // Axios otomatis mengembalikan data di properti .data
+      if (response.data.success) {
+        console.log("Berhasil:", response.data.message);
+        Alert.alert("Sukses", "Kegiatan berhasil ditambahkan!", [
+          { text: "OK", onPress: () => router.push("/(tabs)/pages/home") }
+        ]);
       } else {
-        alert("Gagal: " + data.message);
+        Alert.alert("Gagal", response.data.message || "Gagal menyimpan kegiatan.");
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("ERR:", error);
-      alert("Terjadi kesalahan saat mengirim data ke server.");
+      // Menangani error dari Axios/Network
+      const pesanError = error.response?.data?.message || "Terjadi kesalahan koneksi ke server.";
+      Alert.alert("Error", pesanError);
     }
   };
 
   const handleBatal = () => {
-    console.log('Aksi dibatalkan');
-    alert('Aksi dibatalkan.');
+    router.back(); // Lebih baik kembali ke halaman sebelumnya daripada sekadar alert
   };
-  // --------------------------
-
-  // Daftar opsi Kategori
-  
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Appbar - Header (Opsional, tergantung navigasi) */}
       <Appbar.Header style={{ backgroundColor: theme.colors.background }}>
         <Appbar.Content 
           title="Tambah Kegiatan" 
@@ -137,18 +125,16 @@ const tambahkegiatan: React.FC = () => {
           <TextInput
             value={nama_kegiatan}
             onChangeText={setNamaKegiatan}
-            placeholder="Nama kegiatan"
+            placeholder="Nama Kegiatan"
             mode="outlined"
             style={styles.textInput}
             dense={true}
           />
         </FormRow>
 
-        {/* Input Kategori (Menggunakan Menu) */}
+        {/* Input Kategori (Dropdown Manual) */}
         <FormRow label="Kategori">
-          <View style={{ position: 'relative' }}>
-            
-            {/* Input Dropdown */}
+          <View style={{ position: 'relative', zIndex: 1000 }}>
             <Button 
               mode="outlined"
               onPress={() => setDropdownOpen(!dropdownOpen)}
@@ -164,7 +150,6 @@ const tambahkegiatan: React.FC = () => {
               />
             </Button>
 
-            {/* LIST OPSI */}
             {dropdownOpen && (
               <View style={styles.dropdownList}>
                 {kategoriOptions.map((option) => (
@@ -175,7 +160,7 @@ const tambahkegiatan: React.FC = () => {
                       setDropdownOpen(false);
                     }}
                     style={styles.dropdownItem}
-                    labelStyle={{ fontSize: 14, textAlign: 'left' }}
+                    labelStyle={{ fontSize: 14, textAlign: 'left', color: 'black' }}
                     contentStyle={{ justifyContent: 'flex-start' }}
                   >
                     {option}
@@ -186,17 +171,16 @@ const tambahkegiatan: React.FC = () => {
           </View>
         </FormRow>
 
-
         {/* Input Tanggal */}
         <FormRow label="Tanggal">
           <TextInput
             value={tanggal}
-            // Anotasi tipe untuk event handler yang lebih spesifik (opsional, tapi baik)
-            onChangeText={(text: string) => setTanggal(text)}
+            onChangeText={setTanggal}
             placeholder="DD/MM/YYYY"
             mode="outlined"
             style={styles.textInput}
             dense={true}
+            keyboardType="numbers-and-punctuation"
           />
         </FormRow>
 
@@ -209,6 +193,7 @@ const tambahkegiatan: React.FC = () => {
             mode="outlined"
             style={styles.textInput}
             dense={true}
+            keyboardType="numbers-and-punctuation"
           />
         </FormRow>
 
@@ -221,15 +206,16 @@ const tambahkegiatan: React.FC = () => {
             mode="outlined"
             style={styles.textInput}
             dense={true}
+            keyboardType="numbers-and-punctuation"
           />
         </FormRow>
 
-        {/* Input Catatan (TextArea) */}
+        {/* Input Catatan */}
         <FormRow label="Catatan">
           <TextInput
             value={catatan}
             onChangeText={setCatatan}
-            placeholder="Catatan"
+            placeholder="Tambahkan detail..."
             mode="outlined"
             multiline={true} 
             numberOfLines={4}
@@ -237,7 +223,7 @@ const tambahkegiatan: React.FC = () => {
           />
         </FormRow>
 
-        {/* --- Area Tombol Aksi --- */}
+        {/* Tombol Aksi */}
         <View style={styles.buttonContainer}>
           <Button 
             mode="contained" 
@@ -259,122 +245,28 @@ const tambahkegiatan: React.FC = () => {
 
       </ScrollView>
 
-       {/* Bottom Navigation */}
       <BottomNav />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 10,
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 100, 
-  },
-  formRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  label: {
-    width: '35%', 
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  inputContainer: {
-    flex: 1, 
-    minHeight: 40, 
-  },
-  textInput: {
-    height: 40,
-    fontSize: 14,
-    paddingVertical: 0,
-    backgroundColor: 'white', 
-  },
-  textArea: {
-    minHeight: 100, 
-    fontSize: 14,
-    backgroundColor: 'white',
-  },
-  menuButtonContent: {
-    height: 40,
-    justifyContent: 'flex-start',
-    paddingHorizontal: 10,
-  },
-  menuStyle: {
-    width: '50%', 
-  },
-  dropdownButton: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    height: 40,
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-  },
-
-  dropdownList: {
-    position: 'absolute',
-    top: 45,
-    width: '100%',
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    zIndex: 999,
-    elevation: 4,
-  },
-
-  dropdownItem: {
-    justifyContent: 'flex-start',
-    paddingVertical: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 30,
-    paddingHorizontal: 10,
-  },
-  button: {
-    flex: 1,
-    marginHorizontal: 5,
-    borderRadius: 8,
-    paddingVertical: 5,
-  },
-  batalButton: {
-    backgroundColor: 'gray', 
-  },
-  simpanButton: {
-    // Dibiarkan kosong karena warna diatur inline
-  },
-  buttonLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-
-
-  navItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  navCenterIcon: {
-    fontSize: 30, 
-    color: '#4433ff', 
-  },
-  navLabel: {
-    fontSize: 10,
-    color: 'gray',
-  }
+  container: { flex: 1 },
+  headerTitle: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginVertical: 10 },
+  scrollContent: { padding: 20, paddingBottom: 100 },
+  formRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 15 }, // Align flex-start agar label pas dengan textarea
+  label: { width: '35%', fontSize: 14, fontWeight: '500', marginTop: 12 }, // Margin top agar sejajar teks input
+  inputContainer: { flex: 1 },
+  textInput: { height: 40, fontSize: 14, backgroundColor: 'white' },
+  textArea: { minHeight: 100, fontSize: 14, backgroundColor: 'white' },
+  dropdownButton: { borderWidth: 1, borderColor: '#79747E', height: 40, justifyContent: 'center', backgroundColor: '#fff', borderRadius: 4 },
+  dropdownList: { position: 'absolute', top: 42, width: '100%', backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 4, zIndex: 999, elevation: 5 },
+  dropdownItem: { borderRadius: 0 },
+  buttonContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 30, paddingHorizontal: 10 },
+  button: { flex: 1, marginHorizontal: 5, borderRadius: 8, paddingVertical: 5 },
+  batalButton: { backgroundColor: 'gray' },
+  simpanButton: {},
+  buttonLabel: { fontSize: 16, fontWeight: 'bold' },
 });
 
-export default tambahkegiatan;
+export default TambahKegiatan;
