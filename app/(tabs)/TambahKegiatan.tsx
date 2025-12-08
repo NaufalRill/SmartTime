@@ -110,7 +110,7 @@ const TambahKegiatan: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor:  "#fff",}]}>
       <Appbar.Header style={{ backgroundColor: theme.colors.background }}>
         <Appbar.Content 
           title="Tambah Kegiatan" 
@@ -236,7 +236,7 @@ const TambahKegiatan: React.FC = () => {
           <Button 
             mode="contained" 
             onPress={handleSimpan} 
-            style={[styles.button, styles.simpanButton, { backgroundColor: '#4433ff' }]} 
+            style={[styles.button, styles.simpanButton, { backgroundColor: "#3F2B96", }]} 
             labelStyle={styles.buttonLabel}
           >
             Simpan

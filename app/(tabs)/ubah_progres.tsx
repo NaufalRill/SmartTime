@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, Link } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import api from '../service/api';
@@ -149,7 +149,30 @@ export default function UbahProgres() {
     <>
       <Pressable style={{ flex: 1 }} onPress={closeAllDropdowns}>
         <ScrollView style={styles.container} nestedScrollEnabled>
-          <Text style={styles.header}>Edit Tugas</Text>
+
+          {/* HEADER BARU: Dengan Tombol Back */}
+          <View style={styles.headerContainer}>
+            {/* Tombol Back */}
+            <TouchableOpacity style={styles.backButton}>
+              <Link href={{
+              pathname: "/(tabs)/pages/detail-tugas",
+              params: { id: id },
+              }}
+              style={styles.backButton}> 
+              
+              <Ionicons name="arrow-back" size={28} color="#3F2B96" />
+
+              </Link>
+
+            </TouchableOpacity>
+
+            {/* Judul */}
+            <Text style={styles.headerTitle}>Ubah Progres</Text>
+            
+            {/* View Kosong (Dummy) agar judul tetap presisi di tengah */}
+            <View style={{ width: 28 }} />
+          </View>
+
           <View style={styles.line} />
 
           {/* FILTER */}
@@ -360,6 +383,28 @@ const styles = StyleSheet.create({
     color: "#3F2B96",
     marginTop: 60,
   },
+
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', // Agar tombol di kiri, judul di tengah, dummy di kanan
+    marginTop: 60,
+    marginBottom: 0, 
+  },
+  
+  headerTitle: {
+    fontSize: 34,
+    fontWeight: "700",
+    color: "#3F2B96",
+    textAlign: "center",
+    // Hapus marginTop dari sini karena sudah di handle container
+  },
+
+  backButton: {
+    padding: 5, // Area sentuh lebih luas
+  },
+
+  
 
   line: {
     height: 2,

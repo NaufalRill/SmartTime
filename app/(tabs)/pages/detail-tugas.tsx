@@ -127,6 +127,16 @@ export default function DetailScreen() {
             <View style={styles.underline} />
           </View>
 
+          {/* Bagian Kesulitan */}
+          <View style={styles.statusContainer}>
+            <View style={styles.statusRow}>
+              <Text style={styles.statusLabel}>Kesulitan :</Text>
+              <Text style={styles.statusValue}>{detail.kesulitan}</Text>
+            </View>
+            {/* Garis putih di bawah status */}
+            <View style={styles.underline} />
+          </View>
+
           {/* Progress Bar */}
           <View style={styles.progressContainer}>
             <View style={styles.progressTrack}>
@@ -143,15 +153,11 @@ export default function DetailScreen() {
         {/* Action Buttons */}
         <View style={styles.actionContainer}>
           <TouchableOpacity style={styles.actionButton}>
-            <Link
-              href={{
+            <Link href={{
                 pathname: "/(tabs)/ubah_progres",
                 params: { id: detail.id },
               }}
-              style={styles.actionButtonText}
-            >
-              Ubah Progres
-            </Link>
+              style={styles.actionButtonText}> Ubah Progres</Link>
           </TouchableOpacity>
 
 
