@@ -1,11 +1,24 @@
 import React, { useState } from "react";
-import { View, Text, Switch, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Switch,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { router } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
 
 const PengaturanReminder = () => {
   const [notifSound, setNotifSound] = useState(true);
+  const [popupVisible, setPopupVisible] = useState(false);
+
+  const handleLogout = () => {
+    setPopupVisible(false);
+    router.push("/auth/login");
+  };
 
   return (
     <View style={styles.container}>
@@ -32,24 +45,54 @@ const PengaturanReminder = () => {
 
       {/* Motivational Message */}
       <TouchableOpacity style={styles.settingBox}>
-        <Text style={styles.settingText}>Pesan Motivasi : Aktif / Nonaktif</Text>
+        <Text style={styles.settingText}>
+          Pesan Motivasi : Aktif / Nonaktif
+        </Text>
         <Ionicons name="chevron-forward-outline" size={20} color="#444" />
       </TouchableOpacity>
 
-      {/* Theme Setting */}
+      {/* Theme */}
       <TouchableOpacity style={styles.settingBox}>
-        <Text style={styles.settingText}>Tema Notifikasi : Terang / Gelap</Text>
+        <Text style={styles.settingText}>
+          Tema Notifikasi : Terang / Gelap
+        </Text>
         <Ionicons name="chevron-forward-outline" size={20} color="#444" />
       </TouchableOpacity>
 
       {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutBtn}>
-        <Link href="/auth/login" style={styles.logoutText}>Log Out</Link>
+      <TouchableOpacity
+        style={styles.logoutBtn}
+        onPress={() => setPopupVisible(true)}
+      >
+        <Text style={styles.logoutText}>Log Out</Text>
       </TouchableOpacity>
+
+      {/* POPUP CONFIRM LOGOUT */}
+      <Modal transparent visible={popupVisible} animationType="fade">
+        <View style={styles.modalBackground}>
+          <View style={styles.popupBox}>
+            <Text style={styles.popupText}>
+              Apakah Anda Yakin Untuk Logout ?
+            </Text>
+
+            <View style={styles.popupBtnRow}>
+              <TouchableOpacity
+                style={styles.cancelBtn}
+                onPress={() => setPopupVisible(false)}
+              >
+                <Text style={styles.cancelText}>Batal</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.okBtn} onPress={handleLogout}>
+                <Text style={styles.okText}>Logout</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* Bottom Navigation */}
       <BottomNav />
-
     </View>
   );
 };
@@ -109,15 +152,57 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-
-
-  centerBtn: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    borderWidth: 3,
-    borderColor: "#000",
+  /* POPUP */
+  modalBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  popupBox: {
+    width: 260,
+    backgroundColor: "#3F34D1",
+    padding: 20,
+    borderRadius: 15,
+    alignItems: "center",
+  },
+
+  popupText: {
+    color: "#fff",
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: 20,
+  },
+
+  popupBtnRow: {
+    flexDirection: "row",
+    gap: 15,
+  },
+
+  cancelBtn: {
+    backgroundColor: "#4CD964",
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    borderRadius: 10,
+  },
+
+  cancelText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+
+  okBtn: {
+    backgroundColor: "#FF3B30",
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    borderRadius: 10,
+  },
+
+  okText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
