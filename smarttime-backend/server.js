@@ -269,6 +269,43 @@ app.get('/api/tugas/:id', (req, res) => {
     });
 });
 
+// Route Update Tugas (PATCH)
+app.patch('/api/tugas/:id', (req, res) => {
+    const id = req.params.id;
+    const { filter, judul, deskripsi, deadline, kesulitan, prioritas, progress } = req.body;
+
+    const sql = `
+        UPDATE tambahtugas 
+        SET filter = ?, judul = ?, deskripsi = ?, deadline = ?, kesulitan = ?, prioritas = ?, progress = ?
+        WHERE id = ?`;
+
+    db.query(
+        sql,
+        [filter, judul, deskripsi, deadline, kesulitan, prioritas, progress, id],
+        (err, result) => {
+            if (err) {
+                console.error("Error UPDATE tugas:", err);
+                return res.status(500).json({
+                    success: false,
+                    message: "Gagal mengupdate tugas."
+                });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Tugas tidak ditemukan."
+                });
+            }
+
+            res.json({
+                success: true,
+                message: "Tugas berhasil diperbarui!",
+            });
+        }
+    );
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server berjalan di http://localhost:${PORT}`);

@@ -1,234 +1,512 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  Alert,
+  Platform,
+  ActivityIndicator
+} from "react-native";
+import Slider from "@react-native-community/slider";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
-
-const { width } = Dimensions.get("window");
+import DateTimePicker from '@react-native-community/datetimepicker';
+import api from '../service/api';
 
 export default function UbahProgres() {
+  const router = useRouter();
+
+  const { id } = useLocalSearchParams(); 
+
+  const [isLoadingData, setIsLoadingData] = useState(true); // Loading saat ambil data awal
+  const [isSaving, setIsSaving] = useState(false); // Loading saat tombol simpan ditekan
+
+  const [judul, setJudul] = useState("");
+  const [deskripsi, setDeskripsi] = useState("");
+
+  const [kesulitan, setKesulitan] = useState("");
+  const [prioritas, setPrioritas] = useState("");
+  const [progress, setProgress] = useState(0);
+  const [filter, setFilter] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [kesulitanOpen, setKesulitanOpen] = useState(false);
+
+  const filterOptions = ["Tugas", "Kuliah", "Organisasi", "Semua"];
+  const kesulitanOptions = ["Mudah", "Sedang", "Sulit"];
+
+  const closeAllDropdowns = () => {
+    setFilterOpen(false);
+    setKesulitanOpen(false);
+  };
+
+
+  const [deadline, setDeadline] = useState(new Date()); 
+  const [showPicker, setShowPicker] = useState(false);
+
+  // 2. USE EFFECT: Ambil data lama berdasarkan ID saat halaman dibuka
+  useEffect(() => {
+    if (id) {
+      fetchDetailTugas();
+    }
+  }, [id]);
+
+  const fetchDetailTugas = async () => {
+    try {
+      const response = await api.get(`/tugas/${id}`);
+      if (response.data.success) {
+        const data = Array.isArray(response.data.data) ? response.data.data[0] : response.data.data;
+        
+        // Isi form dengan data dari database
+        setJudul(data.judul);
+        setDeskripsi(data.deskripsi || "");
+        setFilter(data.filter || "Filter");
+        setKesulitan(data.kesulitan || "");
+        setPrioritas(data.prioritas || "");
+        setProgress(data.progress || ""); // Asumsi DB simpan 0.5, Slider butuh 50
+        
+        // Konversi string tanggal dari DB ke Object Date JS
+        if (data.deadline) {
+            setDeadline(new Date(data.deadline));
+        }
+      }
+    } catch (error) {
+      console.error("Gagal ambil data:", error);
+      Alert.alert("Error", "Gagal mengambil data tugas.");
+    } finally {
+      setIsLoadingData(false);
+    }
+  };
+
+  // 3. Tambahkan fungsi helper untuk handle perubahan tanggal
+  const onChangeDate = (event: any, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowPicker(false); // Tutup picker di Android setelah memilih
+    }
+    if (selectedDate) {
+      setDeadline(selectedDate);
+    }
+  };
+
+
+// 3. Handle UPDATE (Bukan Save/Post lagi)
+  const handleUpdate = async () => {
+    if (!judul) {
+      Alert.alert("Error", "Judul tugas wajib diisi!");
+      return;
+    }
+
+    setIsSaving(true);
+    const formattedDeadline = deadline.toISOString().split('T')[0];
+    
+    // Konversi progress slider (0-100) kembali ke desimal (0.0-1.0) jika DB butuh desimal
+    // Jika DB butuh 0-100, biarkan saja `progress`.
+    // Disini saya asumsi DB simpan desimal (sesuai kode home screen sebelumnya):
+    
+
+    try {
+      // Panggil endpoint PATCH
+      const response = await api.patch(`/tugas/${id}`, {
+        filter,
+        judul,
+        deskripsi,
+        deadline: formattedDeadline,
+        kesulitan,
+        prioritas,
+        progress, // Kirim progress yang sudah diupdate
+      });
+
+      if (response.data.success) {
+        Alert.alert("Sukses", "Data berhasil diperbarui!", [
+            { text: "OK", onPress: () => router.push("/(tabs)/pages/home") }
+        ]);
+      } else {
+        Alert.alert("Gagal", response.data.message || "Gagal mengupdate tugas.");
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "Tidak dapat terhubung ke server!");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (isLoadingData) {
+    return (
+        <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+            <ActivityIndicator size="large" color="#3F2B96" />
+        </View>
+    );
+  }
+
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <Text style={styles.headerTitle}>Ubah Progres</Text>
-        <View style={styles.headerLine} />
+    <>
+      <Pressable style={{ flex: 1 }} onPress={closeAllDropdowns}>
+        <ScrollView style={styles.container} nestedScrollEnabled>
+          <Text style={styles.header}>Edit Tugas</Text>
+          <View style={styles.line} />
 
-        {/* Notifikasi Card */}
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardIcon}>🔔</Text>
-            <Text style={styles.cardTitle}>Notifikasi</Text>
-          </View>
+          {/* FILTER */}
+          <View style={{ marginBottom: 10 }}>
+            <View style={styles.row}>
+              <View style={{ width: "50%" }}>
+                <TouchableOpacity
+                  style={styles.dropdownButton}
+                  activeOpacity={0.9}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setFilterOpen(!filterOpen);
+                    setKesulitanOpen(false);
+                  }}
+                >
+                  <Text style={styles.dropdownButtonText}>
+                    {filter || "Filter"}
+                  </Text>
+                  <Ionicons
+                    name={filterOpen ? "chevron-up" : "chevron-down"}
+                    size={20}
+                    color="#444"
+                  />
+                </TouchableOpacity>
 
-          {/* List */}
-          {/* Item 1 */}
-          <View style={styles.listItem}>
-            <Text style={styles.listText}>Rekayasa Interaksi</Text>
-            <Text style={styles.checkIcon}>✔</Text>
-          </View>
-          {/* Item 2 */}
-          <View style={styles.listItem}>
-            <Text style={styles.listText}>Pra Skripsi</Text>
-            <Text style={styles.checkIcon}>✔</Text>
-          </View>
-          {/* Item 3 */}
-          <View style={styles.listItem}>
-            <Text style={styles.listText}>Praktikum PKPL</Text>
-            <Text style={styles.checkIcon}>✔</Text>
-          </View>
-
-          {/* Button */}
-          <TouchableOpacity style={styles.button} activeOpacity={0.8}>
-            <Text style={styles.buttonText}>Simpan</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Statistik Header */}
-        <Text style={styles.statsHeader}>Stastistik Tugas</Text>
-
-        {/* Statistik List */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Tugas Selesai</Text>
-            <Text style={styles.statsValue}>2</Text>
-          </View>
-          <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Tugas Berjalan</Text>
-            <Text style={styles.statsValue}>3</Text>
-          </View>
-          <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Tugas Belum Dimulai</Text>
-            <Text style={styles.statsValue}>1</Text>
-          </View>
-        </View>
-
-        {/* Progress Circle */}
-        <View style={styles.circleContainer}>
-          <View style={styles.circleWrapper}>
-            {/* Background Circle (Grey) */}
-            <View style={styles.circleBase} />
-            {/* Progress Arc (Indigo) - Rotated to look like 40% */}
-            <View style={styles.circleProgress} />
-            {/* Inner Text */}
-            <View style={styles.circleTextContainer}>
-              <Text style={styles.circleText}>40%</Text>
+                {filterOpen && (
+                  <View style={styles.dropdownList}>
+                    {filterOptions.map((option) => (
+                      <TouchableOpacity
+                        key={option}
+                        style={styles.dropdownItem}
+                        onPress={() => {
+                          setFilter(option);
+                          setFilterOpen(false);
+                        }}
+                      >
+                        <Text style={styles.dropdownItemText}>{option}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
             </View>
           </View>
-        </View>
-      </ScrollView>
 
-      {/* Bottom Navigation - NOTE: If you use Expo Router (tabs), you might not need this manually */}
-      {/* Bottom Navigation */}
+          {/* JUDUL */}
+          <View style={styles.formRow}>
+            <Text style={styles.label}>Judul Tugas :</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nama Tugas"
+              value={judul}
+              onChangeText={setJudul}
+            />
+          </View>
+
+          {/* DESKRIPSI */}
+          <View style={styles.formRow}>
+            <Text style={styles.label}>Deskripsi :</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Deskripsi"
+              value={deskripsi}
+              onChangeText={setDeskripsi}
+            />
+          </View>
+
+          {/* DEADLINE */}
+          <View style={styles.formRow}>
+            <Text style={styles.label}>Deadline :</Text>
+            {/* Ganti TextInput dengan TouchableOpacity (Tombol) */}
+            <TouchableOpacity 
+              style={styles.input} // Gunakan style input yang sama agar tampilan konsisten
+              onPress={() => setShowPicker(true)}
+            >
+              {/* Tampilkan tanggal format Indonesia untuk User */}
+              <Text style={{ marginTop: 5 }}>
+                {deadline.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Munculkan Picker jika showPicker true */}
+            {showPicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={deadline}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={onChangeDate}
+              />
+            )}
+          </View>
+
+          {/* KESULITAN */}
+          <View style={styles.formRow}>
+            <Text style={styles.label}>Kesulitan :</Text>
+
+            <TouchableOpacity
+              style={[styles.input, styles.dropdownButton]}
+              onPress={(e) => {
+                e.stopPropagation();
+                setKesulitanOpen(!kesulitanOpen);
+                setFilterOpen(false);
+              }}
+            >
+              <Text style={styles.dropdownButtonText}>
+                {kesulitan || "Select an option"}
+              </Text>
+              <Ionicons
+                name={kesulitanOpen ? "chevron-up" : "chevron-down"}
+                size={20}
+                color="#444"
+              />
+            </TouchableOpacity>
+
+            {kesulitanOpen && (
+              <View style={[styles.dropdownList, { width: "65%", right: 0 }]}>
+                {kesulitanOptions.map((option) => (
+                  <TouchableOpacity
+                    key={option}
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setKesulitan(option);
+                      setKesulitanOpen(false);
+                    }}
+                  >
+                    <Text style={styles.dropdownItemText}>{option}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
+
+          {/* PRIORITAS */}
+          <View style={[styles.formRow, { alignItems: "flex-start" }]}>
+            <Text style={styles.label}>Prioritas :</Text>
+
+            <View style={{ width: "65%" }}>
+              {["Urgent", "Sedang", "Rendah"].map((item) => (
+                <TouchableOpacity
+                  key={item}
+                  style={styles.radioItem}
+                  onPress={() => setPrioritas(item)}
+                >
+                  <View style={styles.radioOuter}>
+                    {prioritas === item && <View style={styles.radioInner} />}
+                  </View>
+                  <Text style={styles.radioLabel}>{item}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* PROGRESS */}
+          <View style={styles.progressRow}>
+            <Text style={styles.label}>Progress :</Text>
+            <Text style={styles.percent}>{progress}%</Text>
+          </View>
+
+          <Slider
+            value={progress}
+            minimumValue={0}
+            maximumValue={100}
+            minimumTrackTintColor="#E53935"
+            thumbTintColor="#E53935"
+            onValueChange={(value) => setProgress(Math.round(value))}
+          />
+
+          <Text style={styles.sliderText}>Geser untuk menyesuaikan</Text>
+
+          {/* BUTTONS */}
+          <View style={styles.btnRow}>
+            <TouchableOpacity
+              style={styles.btnCancel}
+              onPress={() => router.back()}
+            >
+              <Text style={styles.btnText}>Batal</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.btnSave} onPress={handleUpdate}>
+              <Text style={styles.btnText}>
+                {isSaving ? "Menyimpan" : "Update"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ height: 150 }} />
+        </ScrollView>
+      </Pressable>
+
+      {/* NAV BAWAH */}
       <BottomNav />
-    </SafeAreaView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#fff",
+    padding: 20,
   },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 100, // Add padding for bottom nav
-  },
-  // Header Styles
-  headerTitle: {
-    fontSize: 30, // text-4xl
-    fontWeight: "bold",
-    color: "#4338ca", // text-indigo-700
-  },
-  headerLine: {
-    width: "100%",
-    height: 2,
-    backgroundColor: "#c7d2fe", // bg-indigo-200
-    marginTop: 8,
-  },
-  // Card Styles
-  card: {
-    marginTop: 24,
-    backgroundColor: "#4338ca", // bg-indigo-700
-    borderRadius: 24, // rounded-3xl
-    padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5, // Shadow for Android
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-    gap: 8,
-  },
-  cardIcon: {
-    fontSize: 20,
-    color: "white",
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "white",
-  },
-  listItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 8,
-  },
-  listText: {
-    color: "white",
-    fontSize: 16,
-  },
-  checkIcon: {
-    color: "#4ade80", // text-green-400
-    fontSize: 20,
-  },
-  button: {
-    width: "100%",
-    backgroundColor: "white",
-    paddingVertical: 12,
-    borderRadius: 9999, // rounded-full
-    marginTop: 16,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  buttonText: {
-    color: "#4338ca", // text-indigo-700
-    fontWeight: "600",
-    fontSize: 16,
-  },
-  // Stats Styles
-  statsHeader: {
+
+  header: {
+    fontSize: 34,
+    fontWeight: "700",
     textAlign: "center",
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#374151", // text-gray-700
-    marginTop: 32,
+    color: "#3F2B96",
+    marginTop: 60,
   },
-  statsContainer: {
-    marginTop: 16,
+
+  line: {
+    height: 2,
+    backgroundColor: "#E6D6F7",
+    marginHorizontal: 0,
+    marginTop: 10,
+    marginBottom: 25,
   },
-  statsRow: {
+
+  label: {
+    width: "35%",
+    fontSize: 18,
+    fontWeight: "500",
+  },
+
+  formRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 18,
+    width: "100%",
+  },
+
+  input: {
+    width: "65%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 12,
+    borderRadius: 12,
+    marginTop: 0,
+  },
+
+  row: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+
+  dropdownButton: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    backgroundColor: "#F8F8F8",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 4,
-  },
-  statsLabel: {
-    fontSize: 18,
-    color: "#1f2937", // text-gray-800
-  },
-  statsValue: {
-    fontSize: 18,
-    color: "#1f2937",
-    fontWeight: "bold",
-  },
-  // Progress Circle Styles
-  circleContainer: {
     alignItems: "center",
-    marginTop: 24,
   },
-  circleWrapper: {
-    position: "relative",
-    width: 160,
-    height: 160,
+
+  dropdownButtonText: {
+    fontSize: 16,
+    color: "#333",
+  },
+
+  dropdownList: {
+    position: "absolute",
+    top: 48,
+    width: "100%",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    zIndex: 20,
+    elevation: 6,
+  },
+
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderColor: "#eee",
+  },
+
+  dropdownItemText: {
+    fontSize: 16,
+    color: "#333",
+  },
+
+  radioItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 14,
+  },
+
+  radioOuter: {
+    width: 22,
+    height: 22,
+    borderRadius: 22,
+    borderWidth: 2,
+    borderColor: "#3F2B96",
     justifyContent: "center",
     alignItems: "center",
+    marginRight: 12,
   },
-  circleBase: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    borderRadius: 80,
-    borderWidth: 8,
-    borderColor: "#d1d5db", // border-gray-300
+
+  radioInner: {
+    width: 12,
+    height: 12,
+    backgroundColor: "#3F2B96",
+    borderRadius: 12,
   },
-  circleProgress: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    borderRadius: 80,
-    borderWidth: 8,
-    borderColor: "#4338ca", // indigo-700
-    borderTopColor: "transparent", // Create the 'gap'
-    transform: [{ rotate: "140deg" }], // Rotate to match image
+
+  radioLabel: {
+    fontSize: 18,
   },
-  circleTextContainer: {
-    position: "absolute",
-    justifyContent: "center",
-    alignItems: "center",
+
+  progressRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 25,
   },
-  circleText: {
-    fontSize: 24,
+
+  percent: {
+    fontSize: 20,
+    fontWeight: "700",
+  },
+
+  sliderText: {
+    textAlign: "center",
+    marginTop: 10,
+    fontSize: 16,
+  },
+
+  btnRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 35,
+  },
+
+  btnCancel: {
+    backgroundColor: "#3F2B96",
+    paddingVertical: 14,
+    paddingHorizontal: 45,
+    borderRadius: 15,
+  },
+
+  btnSave: {
+    backgroundColor: "#3F2B96",
+    paddingVertical: 14,
+    paddingHorizontal: 45,
+    borderRadius: 15,
+  },
+
+  btnText: {
+    color: "#fff",
+    fontSize: 18,
     fontWeight: "600",
-    color: "#374151",
   },
+
 
 });

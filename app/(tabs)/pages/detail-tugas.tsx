@@ -1,22 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
+
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from "react-native";
 import { Ionicons } from '@expo/vector-icons'; 
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { Link, useLocalSearchParams, useFocusEffect, useRouter } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
 import api from '../../service/api';
 
-interface TaskDetail {
-  id: number;
-  
-}
+
 
 export default function DetailScreen() {
   const { id } = useLocalSearchParams();
@@ -25,11 +15,13 @@ export default function DetailScreen() {
   const [detail, setDetail] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  useFocusEffect(
+  useCallback(() => {
     if (id) {
       fetchDetail();
     }
-  }, [id]);
+  }, [id])
+  );
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "-";
@@ -112,13 +104,13 @@ export default function DetailScreen() {
             <View style={styles.headerIcons}>
               {/* Titik Kuning */}
               <View style={styles.yellowDot} />
-              <Ionicons
-                name="chevron-down"
-                size={24}
-                color="white"
-                style={{ marginLeft: 10 }}
-              />
-            </View>
+                <Ionicons
+                  name="chevron-down"
+                  size={24}
+                  color="white"
+                  style={{ marginLeft: 10 }}
+                />
+              </View>
           </View>
 
           <Text style={styles.deadlineText}>
