@@ -5,6 +5,11 @@ import { Link, useLocalSearchParams } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
 import api from '../../service/api';
 
+interface TaskDetail {
+  id: number;
+  
+}
+
 export default function DetailScreen() {
   // 2. Tangkap ID yang dikirim dari Home
   const { id } = useLocalSearchParams(); 
@@ -93,7 +98,12 @@ export default function DetailScreen() {
         {/* Tombol Aksi */}
         <View style={styles.actionContainer}>
           <TouchableOpacity style={styles.actionButton}>
-            <Link href="/(tabs)/ubah_progres" style={styles.actionButtonText}>Ubah Progres</Link>
+            <Link 
+                href={{ pathname: "/(tabs)/ubah_progres", params: { id: detail.id } }} 
+                style={styles.actionButtonText}
+            >
+                Ubah Progres
+            </Link>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.actionButton}>
