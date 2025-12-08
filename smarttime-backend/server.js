@@ -221,6 +221,37 @@ app.get('/api/tugas', (req, res) => {
     });
 });
 
+// ✅ ROUTE DELETE TUGAS
+app.delete('/api/tugas/:id', (req, res) => {
+    const { id } = req.params;
+
+    const sql = "DELETE FROM tambahtugas WHERE id = ?";
+
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error("Error DELETE tugas:", err);
+            return res.status(500).json({
+                success: false,
+                message: "Gagal menghapus tugas"
+            });
+        }
+
+        // Jika tidak ada baris yang terhapus
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Tugas tidak ditemukan"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Tugas berhasil dihapus"
+        });
+    });
+});
+
+
 // Contoh Backend (Express.js)
 app.get('/api/tugas/:id', (req, res) => {
     const id = req.params.id;

@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { Ionicons } from '@expo/vector-icons'; 
-import { Link, useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
 import api from '../../service/api';
 
@@ -11,9 +19,9 @@ interface TaskDetail {
 }
 
 export default function DetailScreen() {
-  // 2. Tangkap ID yang dikirim dari Home
-  const { id } = useLocalSearchParams(); 
-  
+  const { id } = useLocalSearchParams();
+  const router = useRouter();
+
   const [detail, setDetail] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +34,11 @@ export default function DetailScreen() {
   const formatDate = (dateString: string) => {
     if (!dateString) return "-";
     const date = new Date(dateString);
-    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    return date.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
   };
 
   const fetchDetail = async () => {
@@ -36,9 +48,7 @@ export default function DetailScreen() {
       const response = await api.get(`/tugas/${id}`);
       
       if (response.data.success) {
-        // Asumsi backend mengembalikan { success: true, data: { ... } }
-        // Jika backend mengembalikan array, mungkin perlu response.data.data[0]
-        setDetail(response.data.data); 
+        setDetail(response.data.data);
       }
     } catch (error) {
       console.error("Error fetch detail:", error);
@@ -47,20 +57,53 @@ export default function DetailScreen() {
     }
   };
 
-  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
-  if (!detail) return <Text>Data tidak ditemukan</Text>;
+  const handleDelete = () => {
+  Alert.alert("Hapus Tugas", "Apakah kamu yakin?", [
+    { text: "Batal", style: "cancel" },
+    {
+      text: "Hapus",
+      style: "destructive",
+      onPress: async () => {
+        try {
+          const taskId = Number(detail.id);
+          const res = await api.delete(`/tugas/${taskId}`);
+
+          if (res.data.success) {
+            Alert.alert("Berhasil", "Tugas berhasil dihapus");
+            router.replace("/(tabs)/pages/home");
+          }
+        } catch (err) {
+          console.log("DELETE ERROR:", err);
+          Alert.alert("Error", "Tidak bisa terhubung ke server");
+        }
+      },
+    },
+  ]);
+};
+
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" style={{ flex: 1 }} />;
+  }
+
+  if (!detail) {
+    return <Text style={{ textAlign: "center", marginTop: 50 }}>Data tidak ditemukan</Text>;
+  }
 
   return (
     <View style={styles.mainContainer}>
       
       {/* --- CONTENT AREA --- */}
       <ScrollView style={styles.contentContainer}>
+        {/* Header */}
         <View style={styles.headerRow}>
-            <Link href="/(tabs)/pages/home"><Ionicons name="arrow-back" size={28} color="#000" /> </Link>
-            <Text style={styles.headerTitle}>Smart Time</Text>
+          <Link href="/(tabs)/pages/home">
+            <Ionicons name="arrow-back" size={28} color="#000" />
+          </Link>
+          <Text style={styles.headerTitle}>Smart Time</Text>
         </View>
 
-        {/* Kartu Detail Tugas */}
+        {/* Card Detail */}
         <View style={styles.card}>
           
           {/* Baris Judul & Icon */}
@@ -69,13 +112,18 @@ export default function DetailScreen() {
             <View style={styles.headerIcons}>
               {/* Titik Kuning */}
               <View style={styles.yellowDot} />
-              {/* Chevron Down */}
-              <Ionicons name="chevron-down" size={24} color="white" style={{ marginLeft: 10 }} />
+              <Ionicons
+                name="chevron-down"
+                size={24}
+                color="white"
+                style={{ marginLeft: 10 }}
+              />
             </View>
           </View>
 
-          {/* Deadline */}
-          <Text style={styles.deadlineText}>Deadline : {formatDate(detail.deadline)}</Text>
+          <Text style={styles.deadlineText}>
+            Deadline : {formatDate(detail.deadline)}
+          </Text>
 
           {/* Bagian Status */}
           <View style={styles.statusContainer}>
@@ -90,24 +138,36 @@ export default function DetailScreen() {
           {/* Progress Bar */}
           <View style={styles.progressContainer}>
             <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, {  width: `${detail.progress }%` }]} />
+              <View
+                style={[
+                  styles.progressFill,
+                  { width: `${detail.progress}%` },
+                ]}
+              />
             </View>
           </View>
         </View>
 
-        {/* Tombol Aksi */}
+        {/* Action Buttons */}
         <View style={styles.actionContainer}>
           <TouchableOpacity style={styles.actionButton}>
-            <Link 
-                href={{ pathname: "/(tabs)/ubah_progres", params: { id: detail.id } }} 
-                style={styles.actionButtonText}
+            <Link
+              href={{
+                pathname: "/(tabs)/ubah_progres",
+                params: { id: detail.id },
+              }}
+              style={styles.actionButtonText}
             >
-                Ubah Progres
+              Ubah Progres
             </Link>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionButton}>
-            <Text style={styles.actionButtonText}>Tanda Selesai</Text>
+
+          <TouchableOpacity
+            style={[styles.actionButton, { backgroundColor: "#D32F2F" }]}
+            onPress={handleDelete}
+          >
+            <Text style={styles.actionButtonText}>Hapus Tugas</Text>
           </TouchableOpacity>
         </View>
 
@@ -129,8 +189,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 50,
   },
-
-headerRow: {
+  headerRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 10,
@@ -146,7 +205,7 @@ headerRow: {
   
   // Styles Kartu
   card: {
-    backgroundColor: "#3423CA", // Warna biru/ungu gelap sesuai gambar
+    backgroundColor: "#3423CA",
     borderRadius: 20,
     padding: 20,
     paddingBottom: 30,
@@ -171,7 +230,7 @@ headerRow: {
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: '#FFE600', // Warna kuning
+    backgroundColor: '#FFE600',
   },
   deadlineText: {
     color: 'white',
@@ -188,7 +247,7 @@ headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 8,
-    paddingRight: 20, // Agar teks tidak terlalu mepet kanan
+    paddingRight: 20,
   },
   statusLabel: {
     color: 'white',
@@ -214,23 +273,23 @@ headerRow: {
   progressTrack: {
     width: "100%",
     height: 12,
-    backgroundColor: "#D9D9D9", // Abu-abu terang
+    backgroundColor: "#D9D9D9",
     borderRadius: 10,
   },
   progressFill: {
     height: 12,
-    backgroundColor: "#D32F2F", // Merah gelap
+    backgroundColor: "#D32F2F",
     borderRadius: 10,
   },
 
   // Styles Tombol Aksi
   actionContainer: {
     alignItems: 'center',
-    gap: 15, // Jarak antar tombol
+    gap: 15,
   },
   actionButton: {
-    backgroundColor: "#3B28D6", // Ungu sedikit lebih terang dari kartu atau sama
-    width: '100%', // Tombol lebar penuh
+    backgroundColor: "#3B28D6",
+    width: '100%',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
