@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import { Link, useRouter } from "expo-router"; // Import useRouter
+import api from "../service/api";  
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -10,8 +11,6 @@ export default function RegisterScreen() {
   const [isLoading, setIsLoading] = useState(false); // State loading
 
   // GANTI IP INI SESUAI KOMPUTER ANDA
-
-  const API_URL = 'http://172.16.60.91:3000/api/register'; 
 
 
  const handleRegister = async () => {
@@ -23,41 +22,21 @@ export default function RegisterScreen() {
     setIsLoading(true);
 
     try {
-      console.log("Mencoba connect ke:", API_URL); // 1. Cek URL di log
+  
 
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const response = await api.post('/register', {
           email: email,
           username: username,
           password: password,
-        }),
       });
 
-      // --- BAGIAN DEBUGGING (UBAH INI) ---
-      // Jangan langsung .json(), tapi ambil text-nya dulu
-      const textResponse = await response.text(); 
-      console.log("Respon dari server:", textResponse); // <--- LIHAT INI DI TERMINAL
-
-      // Coba parse manual, kalau gagal kita tahu isinya HTML
-      let json;
-      try {
-        json = JSON.parse(textResponse);
-      } catch (e) {
-        Alert.alert("Error Server", "Server mengirim HTML, bukan JSON. Cek terminal/console log.");
-        throw new Error("Server response is not JSON: " + textResponse);
-      }
-      // ------------------------------------
-
-      if (json.success) {
-        Alert.alert("Sukses", "Akun berhasil dibuat!");
-        router.replace("/auth/login");
-      } else {
-        Alert.alert("Gagal", json.message || "Terjadi kesalahan");
-      }
+       if (response.data.success) {
+                  console.log("Berhasil:", response.data.message);
+                  Alert.alert("Sukses", "Akun berhasil dibuat!");
+                  router.replace("/auth/login");
+                  } else {
+                    Alert.alert("Gagal", response.data.fail || "Gagal Register.");
+                  }
 
     } catch (error) {
       console.error("Error Fetch:", error);

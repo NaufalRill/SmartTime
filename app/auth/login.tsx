@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { useRouter } from "expo-router"; 
+import api from "../service/api";  
 
 export default function LoginScreen() {
   const router = useRouter(); 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false); 
-
-  const API_URL = 'http://192.168.1.3:3000/api/login'; 
 
 
   const handleLogin = async () => {
@@ -21,30 +20,18 @@ export default function LoginScreen() {
     setIsLoading(true);
 
     try {
+
+      const response = await api.post('/login', {
+      username: username,
+      password: password,
+  });
  
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: username,
-          password: password,
-        }),
-      });
-
-      const json = await response.json();
-
-      if (json.success) {
-  
-        Alert.alert("Sukses", json.message);
-        
-
-        router.replace('/(tabs)/pages/home'); 
-      } else {
-
-        Alert.alert("Gagal", json.message);
-      }
+      if (response.data.success) {
+                  console.log("Berhasil:", response.data.message);
+                  router.replace("/(tabs)/pages/home");
+                  } else {
+                    Alert.alert("Gagal", response.data.fail || "Gagal Login.");
+                  }
 
     } catch (error) {
       console.error(error);
