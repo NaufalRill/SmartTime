@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // GANTI IP INI CUKUP DI SINI SAJA
-const BASE_URL = 'http://192.168.1.3:3000/api'; 
+const BASE_URL = 'http://192.168.116.63:3000/api'; 
 
 const api = axios.create({
   baseURL: BASE_URL,

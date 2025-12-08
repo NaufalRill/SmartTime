@@ -221,6 +221,23 @@ app.get('/api/tugas', (req, res) => {
     });
 });
 
+// Contoh Backend (Express.js)
+app.get('/api/tugas/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = "SELECT * FROM tambahtugas WHERE id = ?";
+    
+    db.query(sql, [id], (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: err.message });
+        
+        // Cek apakah data ditemukan
+        if (result.length > 0) {
+            res.json({ success: true, data: result[0] }); // Kirim object pertama saja
+        } else {
+            res.json({ success: false, message: "Tugas tidak ditemukan" });
+        }
+    });
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server berjalan di http://localhost:${PORT}`);

@@ -1,10 +1,50 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 import { Ionicons } from '@expo/vector-icons'; 
-import { Link } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
+import api from '../../service/api';
 
 export default function DetailScreen() {
+  // 2. Tangkap ID yang dikirim dari Home
+  const { id } = useLocalSearchParams(); 
+  
+  const [detail, setDetail] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (id) {
+      fetchDetail();
+    }
+  }, [id]);
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
+  const fetchDetail = async () => {
+    try {
+      // 3. Panggil API berdasarkan ID (Pastikan backend mendukung route ini)
+      // Contoh endpoint: GET /api/tugas/5
+      const response = await api.get(`/tugas/${id}`);
+      
+      if (response.data.success) {
+        // Asumsi backend mengembalikan { success: true, data: { ... } }
+        // Jika backend mengembalikan array, mungkin perlu response.data.data[0]
+        setDetail(response.data.data); 
+      }
+    } catch (error) {
+      console.error("Error fetch detail:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
+  if (!detail) return <Text>Data tidak ditemukan</Text>;
+
   return (
     <View style={styles.mainContainer}>
       
@@ -20,7 +60,7 @@ export default function DetailScreen() {
           
           {/* Baris Judul & Icon */}
           <View style={styles.cardHeaderRow}>
-            <Text style={styles.taskTitle}>Pra Skripsi</Text>
+            <Text style={styles.taskTitle}>{detail.judul}</Text>
             <View style={styles.headerIcons}>
               {/* Titik Kuning */}
               <View style={styles.yellowDot} />
@@ -30,13 +70,13 @@ export default function DetailScreen() {
           </View>
 
           {/* Deadline */}
-          <Text style={styles.deadlineText}>Deadline : 25 Oktober 2025</Text>
+          <Text style={styles.deadlineText}>Deadline : {formatDate(detail.deadline)}</Text>
 
           {/* Bagian Status */}
           <View style={styles.statusContainer}>
             <View style={styles.statusRow}>
-              <Text style={styles.statusLabel}>Status :</Text>
-              <Text style={styles.statusValue}>Sedang Dikerjakan</Text>
+              <Text style={styles.statusLabel}>Prioritas :</Text>
+              <Text style={styles.statusValue}>{detail.prioritas}</Text>
             </View>
             {/* Garis putih di bawah status */}
             <View style={styles.underline} />
@@ -45,7 +85,7 @@ export default function DetailScreen() {
           {/* Progress Bar */}
           <View style={styles.progressContainer}>
             <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, { width: "40%" }]} />
+              <View style={[styles.progressFill, {  width: `${detail.progress }%` }]} />
             </View>
           </View>
         </View>

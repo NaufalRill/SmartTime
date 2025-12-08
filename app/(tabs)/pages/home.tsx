@@ -5,7 +5,7 @@ import React, { useState, useCallback } from 'react';
 import api from '../../service/api';
 
 interface Task {
-  id?: number;
+  id: number;
   judul: string;
   deadline: string;
   progress: number;
@@ -66,7 +66,15 @@ export default function HomeScreen() {
       <ScrollView style={{ marginTop: 10 }}>
         {tasks.map((item, index) => (
           <View key={index} style={styles.card}>
-            <Link href="/(tabs)/pages/detail-tugas" style={styles.cardTitle}>{item.judul}</Link>
+            <Link 
+              href={{
+                pathname: "/(tabs)/pages/detail-tugas",
+                params: { id: item.id } // <-- Mengirim ID tugas ke halaman tujuan
+              }} 
+              style={styles.cardTitle}
+            >
+              {item.judul}
+            </Link>
             <Text style={styles.cardSub}>
               {calculateDaysLeft(item.deadline)}
             </Text>
