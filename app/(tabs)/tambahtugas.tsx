@@ -33,7 +33,7 @@ export default function TambahTugasScreen() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [kesulitanOpen, setKesulitanOpen] = useState(false);
 
-  const filterOptions = ["Tugas", "Kuliah", "Organisasi", "Semua"];
+  const filterOptions = ["Tugas", "Kuliah", "Organisasi"];
   const kesulitanOptions = ["Mudah", "Sedang", "Sulit"];
 
   const closeAllDropdowns = () => {
