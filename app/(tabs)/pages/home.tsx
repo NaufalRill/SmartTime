@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-nati
 import { Link, useFocusEffect } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
 import React, { useState, useCallback } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import api from '../../service/api';
 
 interface Task {
@@ -14,10 +15,19 @@ interface Task {
 export default function HomeScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
+  const [currentFilter, setCurrentFilter] = useState("Semua"); // Default 'Semua'
+  const [isFilterOpen, setIsFilterOpen] = useState(false); // Untuk buka/tutup dropdown
+  
+  const filterOptions = [ "Semua", "Tugas", "Kuliah", "Organisasi"]; // Sesuaikan opsi database
 
-  const fetchTasks = async () => {
+  const fetchTasks = async (kategoriDipilih : string) => {
     try {
-      const response = await api.get('/tugas');
+      const param = kategoriDipilih === "Semua" ? "" : `?kategori=${kategoriDipilih}`;
+      const response = await api.get('/tugas', {
+        params: {
+            kategori: kategoriDipilih // Ini akan menjadi ?kategori=...
+        }
+      });
       const json = response.data;
 
       if (json.success) {
@@ -30,8 +40,8 @@ export default function HomeScreen() {
 
     useFocusEffect(
     useCallback(() => {
-      fetchTasks();
-    }, [])
+      fetchTasks(currentFilter);
+    }, [currentFilter])
   );
 
     const calculateDaysLeft = (deadlineDate : string) => {
@@ -46,6 +56,13 @@ export default function HomeScreen() {
       if (daysDiff === 0) return ( <Text style={{ color: 'red' }}>Deadline Hari Ini</Text> );
       return `${daysDiff} Hari Lagi`;
     };
+
+    const handleSelectFilter = (filterName: string) => {
+    setCurrentFilter(filterName);
+    setIsFilterOpen(false); // Tutup dropdown
+    // useEffect/useFocusEffect akan otomatis mendeteksi perubahan state dan reload data
+  };
+
   
 
   return (
@@ -53,10 +70,39 @@ export default function HomeScreen() {
       <Text style={styles.title}>Smart Time</Text>
 
       {/* Filter Row */}
-      <View style={styles.row}>
-        <TouchableOpacity style={styles.filterBtn}>
-          <Text style={styles.filterText}>Filter</Text>
-        </TouchableOpacity>
+      <View style={[styles.row, { zIndex : 1000}]} >
+        {/* Tombol Filter dengan Dropdown */}
+        <View style={{ position: 'relative' }}> 
+            <TouchableOpacity 
+                style={styles.filterBtn} 
+                onPress={() => setIsFilterOpen(!isFilterOpen)}
+            >
+                <Text style={styles.filterText}>
+                    {currentFilter === "Semua" ? "Filter" : currentFilter}
+                </Text>
+                <Ionicons name={isFilterOpen ? "chevron-up" : "chevron-down"} size={16} color="black" />
+            </TouchableOpacity>
+
+            {/* DROPDOWN MENU */}
+            {isFilterOpen && (
+                <View style={styles.dropdownContainer}>
+                    {filterOptions.map((option) => (
+                        <TouchableOpacity 
+                            key={option} 
+                            style={styles.dropdownItem}
+                            onPress={() => handleSelectFilter(option)}
+                        >
+                            <Text style={{ 
+                                fontWeight: currentFilter === option ? 'bold' : 'normal',
+                                color: currentFilter === option ? '#4433ff' : 'black'
+                            }}>
+                                {option}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            )}
+        </View>
 
         <TouchableOpacity style={styles.fastBtn}>
           <Link href="/(tabs)/pages/tambahpengingat" style={styles.fastText}>Pengingat Cepat</Link>
@@ -115,13 +161,16 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   filterBtn: {
-    backgroundColor: "#F2F2F2",
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    paddingVertical: 10, 
+    paddingHorizontal: 15, 
+    backgroundColor: '#eee', 
+    borderRadius: 8,
+    flexDirection: 'row', // Agar teks dan icon sejajar
+    alignItems: 'center',
+    gap: 5
   },
   filterText: {
-    fontWeight: "600",
+    fontWeight: 'bold',
   },
   fastBtn: {
     backgroundColor: "#4424E9",
@@ -161,6 +210,30 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
     borderRadius: 10,
   },
+
+  // Style Dropdown Baru
+    dropdownContainer: {
+        position: 'absolute',
+        top: 45, // Muncul di bawah tombol
+        left: 0,
+        width: 150,
+        backgroundColor: 'white',
+        borderRadius: 8,
+        elevation: 5, // Shadow Android
+        shadowColor: '#000', // Shadow iOS
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        paddingVertical: 5
+    },
+    dropdownItem: {
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0'
+    },
 
 
 });

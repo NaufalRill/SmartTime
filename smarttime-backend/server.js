@@ -200,26 +200,39 @@ app.post('/api/tambahpengingat', (req, res) => {
 });
 
 
+// GET Tugas dengan Filter (Query Parameter)
 app.get('/api/tugas', (req, res) => {
-    // Kita urutkan berdasarkan deadline agar yang paling mepet muncul duluan
-    const sql = `SELECT * FROM tambahtugas ORDER BY deadline ASC`;
+    // 1. Tangkap parameter 'kategori' dari URL (misal: ?kategori=Kuliah)
+    const { kategori } = req.query; 
 
-    db.query(sql, (err, result) => {
+    console.log("--> Request Filter masuk:", kategori);
+
+    let sql = "SELECT * FROM tambahtugas";
+    let params = [];
+
+    // 2. Jika ada kategori dan bukan 'Semua', tambahkan WHERE
+    if (kategori && kategori !== 'Semua' && kategori !== '') {
+        // Pastikan nama kolom di database adalah 'filter' (sesuai gambar Anda)
+        sql += " WHERE filter = ?"; 
+        params.push(kategori);
+    }
+
+    // 3. Urutkan berdasarkan deadline
+    sql += " ORDER BY deadline ASC";
+
+    console.log("--> Menjalankan SQL:", sql);
+    console.log("--> Parameter:", params);
+
+    db.query(sql, params, (err, result) => {
         if (err) {
             console.error("Error SELECT tugas:", err);
-            return res.status(500).json({
-                success: false,
-                message: "Gagal mengambil tugas dari database."
-            });
+            return res.status(500).json({ success: false, message: "Error DB" });
         }
-
-        // Kirim hasil data (array of objects) ke frontend
-        res.json({
-            success: true,
-            data: result 
-        });
+        res.json({ success: true, data: result });
     });
 });
+
+
 
 // ✅ ROUTE DELETE TUGAS
 app.delete('/api/tugas/:id', (req, res) => {
