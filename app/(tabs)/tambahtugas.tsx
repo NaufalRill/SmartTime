@@ -10,6 +10,7 @@ import {
   Alert,
   Platform,
 } from "react-native";
+import { Button } from 'react-native-paper';
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -272,30 +273,36 @@ const handleSave = async () => {
 
           <Text style={styles.sliderText}>Geser untuk menyesuaikan</Text>
 
-          {/* BUTTONS */}
-          <View style={styles.btnRow}>
-            <TouchableOpacity
-              style={styles.btnCancel}
-              onPress={() => {
-                setJudul("");
-                setDeskripsi("");
-                setDeadline(new Date());
-                setKesulitan("");
-                setPrioritas("");
-                setProgress(0);
-                setFilter("");
-                closeAllDropdowns();
-              }}
-            >
-              <Text style={styles.btnText}>Batal</Text>
-            </TouchableOpacity>
+          {/* Tombol Aksi */}
+                  <View style={styles.buttonContainer}>
+                    <Button 
+                      mode="contained" 
+                     onPress={() => {
+                      setJudul("");
+                      setDeskripsi("");
+                      setDeadline(new Date());
+                      setKesulitan("");
+                      setPrioritas("");
+                      setProgress(0);
+                      setFilter("");
+                      closeAllDropdowns();
+                    }}
+                      style={[styles.button, styles.batalButton]}
+                      labelStyle={styles.buttonLabel}
+                    >
+                      Batal
+                    </Button>
+                    <Button 
+                      mode="contained" 
+                      onPress={handleSave} 
+                      style={[styles.button, styles.simpanButton, { backgroundColor: "#3F2B96", }]} 
+                      labelStyle={styles.buttonLabel}
+                    >
+                      Simpan
+                    </Button>
+                  </View>
 
-            <TouchableOpacity style={styles.btnSave} onPress={handleSave}>
-              <Text style={styles.btnText}>
-                {isLoading ? "..." : "Simpan"}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          
 
           <View style={{ height: 150 }} />
         </ScrollView>
@@ -442,31 +449,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  btnRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 35,
-  },
 
-  btnCancel: {
-    backgroundColor: "#3F2B96",
-    paddingVertical: 14,
-    paddingHorizontal: 45,
-    borderRadius: 15,
-  },
-
-  btnSave: {
-    backgroundColor: "#3F2B96",
-    paddingVertical: 14,
-    paddingHorizontal: 45,
-    borderRadius: 15,
-  },
-
-  btnText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-  },
+  buttonContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 30, paddingHorizontal: 10 },
+  button: { flex: 1, marginHorizontal: 5, borderRadius: 8, paddingVertical: 5 },
+  batalButton: { backgroundColor: 'gray' },
+  simpanButton: {},
+  buttonLabel: { fontSize: 16, fontWeight: 'bold' },
 
 
 });
