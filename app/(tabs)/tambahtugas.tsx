@@ -298,9 +298,10 @@ const handleSave = async () => {
                       style={[styles.button, styles.simpanButton, { backgroundColor: "#3F2B96", }]} 
                       labelStyle={styles.buttonLabel}
                     >
-                      Simpan
+                      {isLoading ? "..." : "Simpan"}
                     </Button>
                   </View>
+
 
           
 
@@ -448,7 +449,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
   },
-
 
   buttonContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 30, paddingHorizontal: 10 },
   button: { flex: 1, marginHorizontal: 5, borderRadius: 8, paddingVertical: 5 },
