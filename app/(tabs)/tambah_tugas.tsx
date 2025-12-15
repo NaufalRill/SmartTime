@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
   StyleSheet,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
@@ -16,9 +16,7 @@ import { Link, useRouter } from "expo-router";
 export default function TambahTugasScreen() {
   const router = useRouter();
 
-  // ============================================
-  // STATE FORM
-  // ============================================
+  // ================= STATE =================
   const [filter, setFilter] = useState("");
   const [judul, setJudul] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
@@ -28,12 +26,9 @@ export default function TambahTugasScreen() {
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // API Backend kamu
   const API_URL = "http://192.168.1.3:3000/api/tugas";
 
-  // ============================================
-  // HANDLE SIMPAN TUGAS
-  // ============================================
+  // ================= SIMPAN =================
   const handleSaveTugas = async () => {
     if (!judul || !deadline) {
       Alert.alert("Error", "Judul dan Deadline wajib diisi!");
@@ -53,42 +48,39 @@ export default function TambahTugasScreen() {
           deadline,
           kesulitan,
           prioritas,
-          progress
-        })
+          progress,
+        }),
       });
 
       const json = await response.json();
 
       if (json.success) {
         Alert.alert("Sukses", "Tugas berhasil ditambahkan!");
-        router.replace("/(tabs)/pages/home"); // kembali ke home
+        router.replace("/(tabs)/pages/home");
       } else {
         Alert.alert("Gagal", json.message);
       }
-
     } catch (error) {
-      console.log(error);
       Alert.alert("Error", "Tidak dapat terhubung ke server");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <View style={styles.page}>
-      {/* Header */}
+      {/* HEADER */}
       <Text style={styles.title}>Tambah Tugas</Text>
       <View style={styles.line} />
 
-      {/* Filter Dropdown */}
+      {/* FILTER */}
       <View style={styles.filterBox}>
-        <Picker
-          selectedValue={filter}
-          onValueChange={setFilter}
-          style={styles.picker}
-        >
+        <Picker selectedValue={filter} onValueChange={setFilter} style={styles.picker}>
           <Picker.Item label="Filter" value="" />
+          <Picker.Item label="Akademik" value="akademik" />
+          <Picker.Item label="Non Akademik" value="non-akademik" />
         </Picker>
-        <Ionicons name="chevron-down" size={18} style={styles.dropdownIcon} />
+        <Ionicons name="chevron-down" size={14} style={styles.dropdownIcon} />
       </View>
 
       {/* FORM */}
@@ -96,79 +88,87 @@ export default function TambahTugasScreen() {
         {/* Judul */}
         <View style={styles.row}>
           <Text style={styles.label}>Judul Tugas :</Text>
-          <TextInput style={styles.input} placeholder="Nama tugas" />
+          <TextInput
+            style={styles.input}
+            placeholder="Nama tugas"
+            value={judul}
+            onChangeText={setJudul}
+          />
         </View>
 
         {/* Deskripsi */}
         <View style={styles.row}>
           <Text style={styles.label}>Deskripsi :</Text>
-          <TextInput style={styles.input} placeholder="Deskripsi" />
+          <TextInput
+            style={styles.input}
+            placeholder="Deskripsi"
+            value={deskripsi}
+            onChangeText={setDeskripsi}
+          />
         </View>
 
         {/* Deadline */}
         <View style={styles.row}>
           <Text style={styles.label}>Deadline :</Text>
-          <TextInput style={styles.input} placeholder="DD/MM/YYYY" />
+          <TextInput
+            style={styles.input}
+            placeholder="YYYY-MM-DD"
+            value={deadline}
+            onChangeText={setDeadline}
+          />
         </View>
 
         {/* Kesulitan */}
         <View style={styles.row}>
           <Text style={styles.label}>Kesulitan :</Text>
-
           <View style={styles.inputPickerWrapper}>
             <Picker
               selectedValue={kesulitan}
               onValueChange={setKesulitan}
               style={styles.inputPicker}
             >
-              <Picker.Item label="Kesulitan" value="" />
+              <Picker.Item label="Pilih" value="" />
               <Picker.Item label="Mudah" value="mudah" />
               <Picker.Item label="Sedang" value="sedang" />
               <Picker.Item label="Sulit" value="sulit" />
             </Picker>
-            <Ionicons
-              name="chevron-down"
-              size={18}
-              style={styles.dropdownIconAbsolute}
-            />
+            <Ionicons name="chevron-down" size={14} style={styles.dropdownIconAbsolute} />
           </View>
         </View>
 
-        {/* Prioritas */}
-<View style={{ marginTop: 10 }}>
-  <View style={styles.priorityHeader}>
-    <Text style={styles.label}>Prioritas :</Text>
+        {/* PRIORITAS */}
+        <View style={styles.priorityHeader}>
+          <Text style={styles.label}>Prioritas :</Text>
+          <View style={styles.priorityRow}>
+            {["Urgent", "Sedang", "Rendah"].map((item) => (
+              <TouchableOpacity
+                key={item}
+                onPress={() => setPrioritas(item)}
+                style={[
+                  styles.priorityButton,
+                  prioritas === item && { backgroundColor: "#CDA3FF" },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.priorityText,
+                    prioritas === item && { color: "#fff" },
+                  ]}
+                >
+                  {item}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
 
-    <View style={styles.priorityRow}>
-      <TouchableOpacity
-        style={[styles.priorityButton]}
-      >
-        <Text style={styles.priorityText}>Urgent</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.priorityButton]}
-      >
-        <Text style={styles.priorityText}>Sedang</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.priorityButton]}
-      >
-        <Text style={styles.priorityText}>Rendah</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</View>
-
-        {/* Progress */}
+        {/* PROGRESS */}
         <View style={styles.progressHeader}>
           <Text style={styles.label}>Progress :</Text>
           <Text style={styles.progressValue}>{progress}%</Text>
         </View>
 
         <Slider
-          style={{ width: "100%", height: 40 }}
           minimumValue={0}
           maximumValue={100}
           value={progress}
@@ -180,29 +180,35 @@ export default function TambahTugasScreen() {
 
         <Text style={styles.progressInfo}>Geser untuk menyesuaikan</Text>
 
-        {/* Buttons */}
+        {/* BUTTON */}
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.cancelBtn}>
+          <TouchableOpacity style={styles.cancelBtn} onPress={() => router.back()}>
             <Text style={styles.btnText}>Batal</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.saveBtn}>
-            <Text style={styles.btnText}>Simpan</Text>
+
+          <TouchableOpacity style={styles.saveBtn} onPress={handleSaveTugas}>
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.btnText}>Simpan</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Bottom Nav */}
+      {/* BOTTOM NAV */}
       <View style={styles.bottomNav}>
-        <Link href="/(tabs)/pages/home"><Ionicons name="home" size={28} /></Link>
-        <Link href="/(tabs)/pages/tambahpengingat"><Ionicons name="briefcase" size={28} /></Link>
-        <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={28} /></Link>
-        <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={28} /></Link>
+        <Link href="/(tabs)/pages/home"><Ionicons name="home" size={26} /></Link>
+        <Link href="/(tabs)/pages/tambahpengingat"><Ionicons name="briefcase" size={26} /></Link>
+        <Link href="/(tabs)/pages/notifikasi"><Ionicons name="notifications" size={26} /></Link>
+        <Link href="/(tabs)/pages/PengaturanReminder"><Ionicons name="settings" size={26} /></Link>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+
+const styles  = StyleSheet.create({
   page: {
     flex: 1,
     backgroundColor: "#FFFFFF",
