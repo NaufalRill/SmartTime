@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 34,
     fontWeight: "700",
-    color: "#3F2B96",
+    color: "#3E2CD2",
     textAlign: "center",
     // Hapus marginTop dari sini karena sudah di handle container
   },
