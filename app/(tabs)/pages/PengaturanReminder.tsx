@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 50,
+    paddingTop: 70,
     paddingHorizontal: 20,
   },
 
@@ -117,8 +117,10 @@ const styles = StyleSheet.create({
   divider: {
     height: 2,
     backgroundColor: "#E6DBF5",
+    marginHorizontal: -20,
     marginVertical: 15,
   },
+
 
   settingBox: {
     backgroundColor: "#fff",
