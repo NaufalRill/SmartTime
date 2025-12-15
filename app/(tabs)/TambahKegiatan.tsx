@@ -118,7 +118,7 @@ const TambahKegiatan: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>Tambah Kegiatan</Text>
+        <Text style={styles.header}>Tambah Kegiatan </Text>
         <View style={styles.line} />
       </View>
 
