@@ -33,7 +33,7 @@ export default function UbahProgres() {
   const [prioritas, setPrioritas] = useState("");
   const [progress, setProgress] = useState(0);
   const [filter, setFilter] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [kesulitanOpen, setKesulitanOpen] = useState(false);
