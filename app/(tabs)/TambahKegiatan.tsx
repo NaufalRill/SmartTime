@@ -33,11 +33,9 @@ const TambahKegiatan: React.FC = () => {
   const [nama_kegiatan, setNamaKegiatan] = useState('');
   const [kategori, setKategori] = useState('Pilih opsi');
 
-  /* ===== DATE PICKER ===== */
   const [tanggal, setTanggal] = useState<Date>(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  /* ===== TIME PICKER ===== */
   const [waktu_mulai, setWaktuMulai] = useState('');
   const [waktu_selesai, setWaktuSelesai] = useState('');
 
@@ -52,7 +50,6 @@ const TambahKegiatan: React.FC = () => {
 
   const kategoriOptions = ['Kuliah', 'Tugas', 'Organisasi'];
 
-  /* ===== HANDLER ===== */
   const onChangeTanggal = (_: any, selected?: Date) => {
     setShowDatePicker(false);
     if (selected) setTanggal(selected);
@@ -130,7 +127,7 @@ const TambahKegiatan: React.FC = () => {
           <TextInput
             value={nama_kegiatan}
             onChangeText={setNamaKegiatan}
-            placeholder="Nama kegiatan"
+            placeholder="Nama Kegiatan" // isi nama kegiatan
             mode="outlined"
             style={styles.textInput}
             dense
@@ -171,17 +168,15 @@ const TambahKegiatan: React.FC = () => {
           </View>
         </FormRow>
 
-        {/* ===== TANGGAL (TAMPILAN TIDAK BERUBAH) ===== */}
         <FormRow label="Tanggal">
           <TouchableOpacity onPress={() => setShowDatePicker(true)}>
             <TextInput
               value={tanggal.toLocaleDateString('id-ID')}
-              placeholder="DD/MM/YYYY"
+              placeholder="DD/MM/YYYY" // pilih tanggal
               mode="outlined"
               style={styles.textInput}
               dense
               editable={false}
-              pointerEvents="none"
             />
           </TouchableOpacity>
 
@@ -189,13 +184,11 @@ const TambahKegiatan: React.FC = () => {
             <DateTimePicker
               value={tanggal}
               mode="date"
-              display="default"
               onChange={onChangeTanggal}
             />
           )}
         </FormRow>
 
-        {/* ===== WAKTU MULAI ===== */}
         <FormRow label="Waktu Mulai">
           <TouchableOpacity onPress={() => setShowTimeMulaiPicker(true)}>
             <TextInput
@@ -205,7 +198,6 @@ const TambahKegiatan: React.FC = () => {
               style={styles.textInput}
               dense
               editable={false}
-              pointerEvents="none"
             />
           </TouchableOpacity>
 
@@ -214,13 +206,11 @@ const TambahKegiatan: React.FC = () => {
               value={waktuMulaiDate}
               mode="time"
               is24Hour
-              display="default"
               onChange={onChangeWaktuMulai}
             />
           )}
         </FormRow>
 
-        {/* ===== WAKTU SELESAI ===== */}
         <FormRow label="Waktu Selesai">
           <TouchableOpacity onPress={() => setShowTimeSelesaiPicker(true)}>
             <TextInput
@@ -230,7 +220,6 @@ const TambahKegiatan: React.FC = () => {
               style={styles.textInput}
               dense
               editable={false}
-              pointerEvents="none"
             />
           </TouchableOpacity>
 
@@ -239,7 +228,6 @@ const TambahKegiatan: React.FC = () => {
               value={waktuSelesaiDate}
               mode="time"
               is24Hour
-              display="default"
               onChange={onChangeWaktuSelesai}
             />
           )}
