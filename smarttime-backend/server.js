@@ -344,6 +344,30 @@ app.post('/api/tambahpengingat', (req, res) => {
     });
 });
 
+// =======================
+// GET SEMUA PENGINGAT (UNTUK NOTIFIKASI)
+// =======================
+app.get('/api/pengingat', (req, res) => {
+    const sql = `
+        SELECT id, nama_tugas, tanggal, jam, menit, frekuensi, jenis_pengingat
+        FROM tambahpengingat
+        ORDER BY tanggal ASC, jam ASC, menit ASC
+    `;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error("Error GET pengingat:", err);
+            return res.status(500).json({
+                success: false,
+                message: "Gagal mengambil data pengingat"
+            });
+        }
+
+        res.json(result); // ⬅️ langsung array, cocok untuk React Native
+    });
+});
+
+
 
 app.listen(PORT, () => {
     console.log(`Server berjalan di http://localhost:${PORT}`);

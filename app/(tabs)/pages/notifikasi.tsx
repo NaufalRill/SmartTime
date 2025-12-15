@@ -1,23 +1,47 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import { Link } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
+import api from "../../service/api";
 
 export default function NotifikasiScreen() {
   const [selected, setSelected] = useState("Reminder");
+  const [data, setData] = useState<any[]>([]);
 
-  const data = [
-    { title: "Rekayasa Interaksi", daysLeft: 1, progress: 0.75 },
-    { title: "Pra Skripsi", daysLeft: 5, progress: 0.45 },
-    { title: "Praktikum PKPL", daysLeft: 14, progress: 0.25 },
-  ];
+  // Ambil data dari backend
+  useEffect(() => {
+    fetchPengingat();
+  }, []);
+
+  const fetchPengingat = async () => {
+    try {
+      const response = await api.get("/pengingat");
+      setData(response.data);
+    } catch (error) {
+      console.log("Gagal mengambil pengingat:", error);
+    }
+  };
+
+  // Hitung sisa hari
+  const hitungSisaHari = (tanggal: string) => {
+    const today = new Date();
+    const target = new Date(tanggal);
+    const diffTime = target.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <Text style={styles.header}>Notifikasi</Text>
 
-      {/* Garis Di Bawah Judul */}
+      {/* Garis */}
       <View style={styles.line} />
 
       {/* Filter Buttons */}
@@ -29,7 +53,8 @@ export default function NotifikasiScreen() {
             selected === "Reminder" && styles.activeFilter,
           ]}
         >
-          <Link href="/(tabs)/popup"
+          <Link
+            href="/(tabs)/popup"
             style={[
               styles.filterText,
               selected === "Reminder" && styles.activeFilterText,
@@ -59,30 +84,44 @@ export default function NotifikasiScreen() {
 
       {/* List Notifikasi */}
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
-        {data.map((item, index) => (
-          <View key={index} style={styles.card}>
-            <Text style={styles.cardTitle}>{item.title}</Text>
-            <Text style={styles.cardSubtitle}>{item.daysLeft} hari lagi</Text>
+        {data.length === 0 && (
+          <Text style={{ textAlign: "center", marginTop: 30 }}>
+            Tidak ada pengingat
+          </Text>
+        )}
 
-            {/* Progress Bar */}
-            <View style={styles.progressBackground}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${item.progress * 100}%` },
-                ]}
-              />
+        {data.map((item, index) => {
+          const daysLeft = hitungSisaHari(item.tanggal);
+          const progress =
+            daysLeft <= 0 ? 1 : Math.max(0, 1 - daysLeft / 30);
+
+          return (
+            <View key={index} style={styles.card}>
+              <Text style={styles.cardTitle}>{item.nama_tugas}</Text>
+              <Text style={styles.cardSubtitle}>
+                {daysLeft} hari lagi
+              </Text>
+
+              {/* Progress Bar */}
+              <View style={styles.progressBackground}>
+                <View
+                  style={[
+                    styles.progressFill,
+                    { width: `${progress * 100}%` },
+                  ]}
+                />
+              </View>
             </View>
-          </View>
-        ))}
+          );
+        })}
       </ScrollView>
 
       {/* Bottom Navigation */}
       <BottomNav />
-
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
