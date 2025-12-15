@@ -317,23 +317,24 @@ const handleSave = async () => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: "#fff",
     padding: 20,
   },
 
   header: {
-    fontSize: 34,
+    fontSize: 30,
     fontWeight: "700",
     textAlign: "center",
     color: "#3F2B96",
-    marginTop: 60,
+    marginTop: 50,
+    marginBottom: 10,
   },
 
   line: {
     height: 2,
     backgroundColor: "#E6D6F7",
-    marginHorizontal: 0,
-    marginTop: 10,
+    marginHorizontal: -20,
     marginBottom: 25,
   },
 

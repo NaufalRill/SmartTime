@@ -204,8 +204,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
 
   headerContainer: { marginTop: 20, marginBottom: 10, paddingHorizontal: 20 },
-  header: { fontSize: 26, fontWeight: '700', textAlign: 'center', color: '#3F2B96' },
-  line: { height: 2, backgroundColor: '#E6D6F7', marginTop: 8 },
+  header: { fontSize: 30, fontWeight: '700', textAlign: 'center', color: '#3E2CD2' },
+  line: { height: 2, backgroundColor: '#E6D6F7', marginTop: 8, marginHorizontal: -20 },
 
   scrollContent: { padding: 20, paddingBottom: 120 },
 
