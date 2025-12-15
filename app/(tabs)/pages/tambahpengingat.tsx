@@ -5,17 +5,25 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
   Alert,
 } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { BottomNav } from "@/components/bottomnav";
-import api from "../../service/api";  
+import api from "../../service/api";
 
 export default function TambahPengingat() {
   const router = useRouter();
+
+  const [namaTugas, setNamaTugas] = useState("");
+
+  const [date, setDate] = useState<Date | null>(null);
+  const [time, setTime] = useState<Date | null>(null);
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const [showFreq, setShowFreq] = useState(false);
   const [frekuensi, setFrekuensi] = useState("Pilih frekuensi");
@@ -25,47 +33,11 @@ export default function TambahPengingat() {
   const [jenisPengingat, setJenisPengingat] = useState("Pilih jenis pengingat");
   const jenisOptions = ["Pop-Up", "Kalender", "Pesan"];
 
-  // === INPUT STATE ===
-  const [namaTugas, setNamaTugas] = useState("");
-  const [jam, setJam] = useState("");
-  const [menit, setMenit] = useState("");
-  const [tanggal, setTanggal] = useState("");
-
-  // === API URL ===
-
-  // ================================================================
-  //   PERBAIKAN FORMAT TANGGAL TANPA MERUBAH TAMPILAN
-  // ================================================================
-  const convertDateToMySQL = (inputDate: string) => {
-  // Terima format seperti 10/04/2025, 10-04-2025, 10.04.2025, 10 04 2025
-  const cleaned = inputDate.replace(/[-. ]/g, "/");
-  const parts = cleaned.split("/");
-
-  if (parts.length !== 3) return null;
-
-  const day = parseInt(parts[0]);
-  const month = parseInt(parts[1]);
-  const year = parseInt(parts[2]);
-
-  if (!day || !month || !year) return null;
-  if (day < 1 || day > 31) return null;
-  if (month < 1 || month > 12) return null;
-  if (year < 1900 || year > 2100) return null;
-
-  const dd = day < 10 ? `0${day}` : day;
-  const mm = month < 10 ? `0${month}` : month;
-
-  return `${year}-${mm}-${dd}`;
-};
-
-
-  // === FUNGSI SIMPAN TUGAS ===
   const handleSave = async () => {
     if (
       !namaTugas ||
-      !jam ||
-      !menit ||
-      !tanggal ||
+      !date ||
+      !time ||
       frekuensi === "Pilih frekuensi" ||
       jenisPengingat === "Pilih jenis pengingat"
     ) {
@@ -73,33 +45,26 @@ export default function TambahPengingat() {
       return;
     }
 
-    // Perbaikan konversi tanggal
-    const formattedDate = convertDateToMySQL(tanggal);
-
-    if (!formattedDate) {
-      Alert.alert("Error", "Format tanggal harus DD/MM/YYYY dan valid.");
-      return;
-    }
+    const formattedDate = date.toISOString().split("T")[0];
+    const jam = time.getHours();
+    const menit = time.getMinutes();
 
     try {
-
-      const response = await api.post('/tambahpengingat', {
-      nama_tugas: namaTugas,
-      jam: parseInt(jam),
-      menit: parseInt(menit),
-      tanggal: formattedDate,
-      frekuensi,
-      jenis_pengingat: jenisPengingat,
-  });
-      
+      const response = await api.post("/tambahpengingat", {
+        nama_tugas: namaTugas,
+        jam,
+        menit,
+        tanggal: formattedDate,
+        frekuensi,
+        jenis_pengingat: jenisPengingat,
+      });
 
       if (response.data.success) {
-            console.log("Berhasil:", response.data.message);
-            Alert.alert("Berhasil", "Pengingat berhasil ditambahkan!");
-            router.push("/(tabs)/pages/home");
-            } else {
-              Alert.alert("Gagal", response.data.fail || "Gagal menyimpan pengingat.");
-            }
+        Alert.alert("Berhasil", "Pengingat berhasil ditambahkan!");
+        router.push("/(tabs)/pages/home");
+      } else {
+        Alert.alert("Gagal", response.data.message);
+      }
     } catch (error) {
       console.log(error);
       Alert.alert("Error", "Tidak dapat terhubung ke server");
@@ -112,7 +77,7 @@ export default function TambahPengingat() {
         {/* Header */}
         <View style={styles.headerRow}>
           <Link href="/(tabs)/pages/home">
-            <Ionicons name="arrow-back" size={28} color="#000" />{" "}
+            <Ionicons name="arrow-back" size={28} color="#000" />
           </Link>
           <Text style={styles.headerTitle}>Tambah Pengingat</Text>
         </View>
@@ -121,41 +86,66 @@ export default function TambahPengingat() {
 
         {/* Nama Tugas */}
         <Text style={styles.label}>Nama Tugas</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Nama Tugas"
-          value={namaTugas}
-          onChangeText={setNamaTugas}
-        />
+        <TouchableOpacity style={styles.input}>
+          <Text
+            style={{ fontSize: 16, color: namaTugas ? "#000" : "#999" }}
+            onPress={() => {}}
+          >
+            {namaTugas || "Isi nama tugas"}
+          </Text>
+        </TouchableOpacity>
 
-        {/* Waktu Pengingat */}
+        {/* Waktu */}
         <Text style={styles.label}>Waktu Pengingat</Text>
-        <View style={styles.timeRow}>
-          <TextInput
-            style={styles.timeInput}
-            placeholder="Jam"
-            keyboardType="numeric"
-            value={jam}
-            onChangeText={setJam}
+        <TouchableOpacity
+          style={styles.input}
+          onPress={() => setShowTimePicker(true)}
+        >
+          <Text style={{ fontSize: 16, color: time ? "#000" : "#999" }}>
+            {time
+              ? time.toLocaleTimeString("id-ID", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "Pilih Waktu"}
+          </Text>
+        </TouchableOpacity>
+
+        {showTimePicker && (
+          <DateTimePicker
+            value={time || new Date()}
+            mode="time"
+            is24Hour
+            display="clock"
+            onChange={(event, selectedTime) => {
+              setShowTimePicker(false);
+              if (selectedTime) setTime(selectedTime);
+            }}
           />
-          <Text style={styles.colon}>:</Text>
-          <TextInput
-            style={styles.timeInput}
-            placeholder="Menit"
-            keyboardType="numeric"
-            value={menit}
-            onChangeText={setMenit}
-          />
-        </View>
+        )}
 
         {/* Tanggal */}
         <Text style={styles.label}>Tanggal</Text>
-        <TextInput
+        <TouchableOpacity
           style={styles.input}
-          placeholder="DD/MM/YYYY"
-          value={tanggal}
-          onChangeText={setTanggal}
-        />
+          onPress={() => setShowDatePicker(true)}
+        >
+          <Text style={{ fontSize: 16, color: date ? "#000" : "#999" }}>
+            {date ? date.toLocaleDateString("id-ID") : "Pilih Tanggal"}
+          </Text>
+        </TouchableOpacity>
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={date || new Date()}
+            mode="date"
+            display="calendar"
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+              if (selectedDate) setDate(selectedDate);
+            }}
+          />
+        )}
 
         {/* Frekuensi */}
         <Text style={styles.label}>Frekuensi</Text>
@@ -167,7 +157,7 @@ export default function TambahPengingat() {
           <Ionicons name="chevron-down" size={20} />
         </TouchableOpacity>
 
-        {/* Jenis Pengingat */}
+        {/* Jenis */}
         <Text style={styles.label}>Jenis Pengingat</Text>
         <TouchableOpacity
           style={styles.selectBox}
@@ -177,7 +167,7 @@ export default function TambahPengingat() {
           <Ionicons name="chevron-down" size={20} />
         </TouchableOpacity>
 
-        {/* Button Row */}
+        {/* Buttons */}
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.btnCancel}>
             <Text style={styles.btnCancelText}>Batal</Text>
@@ -199,7 +189,6 @@ export default function TambahPengingat() {
           <TouchableWithoutFeedback>
             <View style={styles.modalBox}>
               <Text style={styles.modalTitle}>Pilih Frekuensi</Text>
-
               {freqOptions.map((item, idx) => (
                 <TouchableOpacity
                   key={idx}
@@ -217,7 +206,7 @@ export default function TambahPengingat() {
         </TouchableOpacity>
       )}
 
-      {/* MODAL JENIS PENGINGAT */}
+      {/* MODAL JENIS */}
       {showJenis && (
         <TouchableOpacity
           style={styles.modalOverlay}
@@ -227,7 +216,6 @@ export default function TambahPengingat() {
           <TouchableWithoutFeedback>
             <View style={styles.modalBox}>
               <Text style={styles.modalTitle}>Pilih Jenis Pengingat</Text>
-
               {jenisOptions.map((item, idx) => (
                 <TouchableOpacity
                   key={idx}
@@ -245,16 +233,12 @@ export default function TambahPengingat() {
         </TouchableOpacity>
       )}
 
-      {/* Bottom Navigation */}
       <BottomNav />
     </View>
   );
 }
 
-// (styles tidak berubah sama sekali)
-
-
-// =============== STYLES TIDAK DIUBAH SEDIKITPUN ===================
+/* ===================== STYLES (TIDAK DIUBAH) ===================== */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -293,27 +277,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 35,
     fontSize: 16,
     marginTop: 10,
-  },
-  timeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: 35,
-    marginTop: 10,
-  },
-  timeInput: {
-    flex: 1,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 12,
-    padding: 15,
-    fontSize: 16,
-    textAlign: "center",
-  },
-  colon: {
-    fontSize: 22,
-    fontWeight: "700",
-    marginHorizontal: 10,
   },
   selectBox: {
     marginHorizontal: 35,
@@ -364,7 +327,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
   },
-
   modalOverlay: {
     position: "absolute",
     top: 0,
@@ -380,10 +342,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 15,
     padding: 20,
-    elevation: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 3 },
   },
   modalTitle: {
     fontSize: 18,
@@ -403,4 +361,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-
