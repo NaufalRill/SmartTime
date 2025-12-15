@@ -34,7 +34,16 @@ export default function NotifikasiScreen() {
     const target = new Date(tanggal);
     const diffTime = target.getTime() - today.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
   };
+
+  const renderDaysAccurately = (days : number) => {
+  
+        if (days < 0) return ( <Text style={{ color: 'red' }}>Tanggal Terlewat</Text> );
+        if (days === 0) return ( <Text style={{ color: 'red' }}>Deadline Hari Ini</Text> );
+        if (days === -999) return ( <Text style={{ color: 'red' }}>Tanpa Tanggal</Text> );
+        return `${days} Hari Lagi`;
+      };
 
   return (
     <View style={styles.container}>
@@ -94,12 +103,13 @@ export default function NotifikasiScreen() {
           const daysLeft = hitungSisaHari(item.tanggal);
           const progress =
             daysLeft <= 0 ? 1 : Math.max(0, 1 - daysLeft / 30);
+          
 
           return (
             <View key={index} style={styles.card}>
               <Text style={styles.cardTitle}>{item.nama_tugas}</Text>
               <Text style={styles.cardSubtitle}>
-                {daysLeft} hari lagi
+                {renderDaysAccurately(daysLeft)}
               </Text>
 
               {/* Progress Bar */}

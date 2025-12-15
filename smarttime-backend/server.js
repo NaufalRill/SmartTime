@@ -355,25 +355,6 @@ app.patch('/api/tugas/:id', (req, res) => {
    PENGINGAT (SUDAH SIAP DATE & TIME PICKER)
 ====================================================== */
 
-app.post('/api/tambahpengingat', (req, res) => {
-    const { nama_tugas, jam, menit, tanggal, frekuensi, jenis_pengingat } = req.body;
-
-    if (!nama_tugas || jam === undefined || menit === undefined || !tanggal || !frekuensi || !jenis_pengingat) {
-        return res.status(400).json({ success: false, message: "Semua field wajib diisi!" });
-    }
-
-    const sql = `
-        INSERT INTO tambahpengingat 
-        (nama_tugas, jam, menit, tanggal, frekuensi, jenis_pengingat)
-        VALUES (?, ?, ?, ?, ?, ?)
-    `;
-
-    db.query(sql, [nama_tugas, jam, menit, tanggal, frekuensi, jenis_pengingat], (err, result) => {
-        if (err) return res.status(500).json({ success: false, message: err.message });
-
-        res.json({ success: true, message: "Pengingat berhasil ditambahkan!", id: result.insertId });
-    });
-});
 
 // =======================
 // GET SEMUA PENGINGAT (UNTUK NOTIFIKASI)

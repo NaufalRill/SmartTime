@@ -5,6 +5,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -86,14 +87,14 @@ export default function TambahPengingat() {
 
         {/* Nama Tugas */}
         <Text style={styles.label}>Nama Tugas</Text>
-        <TouchableOpacity style={styles.input}>
-          <Text
-            style={{ fontSize: 16, color: namaTugas ? "#000" : "#999" }}
-            onPress={() => {}}
-          >
-            {namaTugas || "Isi nama tugas"}
-          </Text>
-        </TouchableOpacity>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Nama Tugas"
+            value={namaTugas}
+            onChangeText={setNamaTugas}
+          />
+
 
         {/* Waktu */}
         <Text style={styles.label}>Waktu Pengingat</Text>
