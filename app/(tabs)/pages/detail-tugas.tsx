@@ -1,8 +1,10 @@
 
+
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from "react-native";
 import { Ionicons } from '@expo/vector-icons'; 
 import { Link, useLocalSearchParams, useFocusEffect, useRouter } from "expo-router";
+
 import { BottomNav } from "@/components/bottomnav";
 import api from '../../service/api';
 
@@ -104,6 +106,7 @@ export default function DetailScreen() {
             <View style={styles.headerIcons}>
               {/* Titik Kuning */}
               <View style={styles.yellowDot} />
+
                 <Ionicons
                   name="chevron-down"
                   size={24}
@@ -111,6 +114,7 @@ export default function DetailScreen() {
                   style={{ marginLeft: 10 }}
                 />
               </View>
+
           </View>
 
           <Text style={styles.deadlineText}>
@@ -153,11 +157,13 @@ export default function DetailScreen() {
         {/* Action Buttons */}
         <View style={styles.actionContainer}>
           <TouchableOpacity style={styles.actionButton}>
+
             <Link href={{
                 pathname: "/(tabs)/ubah_progres",
                 params: { id: detail.id },
               }}
               style={styles.actionButtonText}> Ubah Progres</Link>
+
           </TouchableOpacity>
 
 

@@ -69,6 +69,8 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Smart Time</Text>
 
+      <View style={styles.line} />
+
       {/* Filter Row */}
       <View style={[styles.row, { zIndex : 1000}]} >
         {/* Tombol Filter dengan Dropdown */}
@@ -151,9 +153,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   title: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "700",
-    color: "#4424E9",
+    color: "#3E2CD2",
+    marginTop: 40,
+    marginBottom: 10,
+  },
+  line: {
+    height: 2,
+    backgroundColor: "#E6D6F7",
+    marginHorizontal:-20,
+    marginBottom: 15,
   },
   row: {
     flexDirection: "row",
