@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, Alert } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from "expo-router";
+import { useRouter } from 'expo-router';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { BottomNav } from "@/components/bottomnav";
+import { BottomNav } from '@/components/bottomnav';
 import api from '../service/api';
 
 interface FormRowProps {
@@ -25,27 +32,68 @@ const TambahKegiatan: React.FC = () => {
 
   const [nama_kegiatan, setNamaKegiatan] = useState('');
   const [kategori, setKategori] = useState('Pilih opsi');
-  const [tanggal, setTanggal] = useState('');
+
+  /* ===== DATE PICKER ===== */
+  const [tanggal, setTanggal] = useState<Date>(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  /* ===== TIME PICKER ===== */
   const [waktu_mulai, setWaktuMulai] = useState('');
   const [waktu_selesai, setWaktuSelesai] = useState('');
+
+  const [waktuMulaiDate, setWaktuMulaiDate] = useState<Date>(new Date());
+  const [waktuSelesaiDate, setWaktuSelesaiDate] = useState<Date>(new Date());
+
+  const [showTimeMulaiPicker, setShowTimeMulaiPicker] = useState(false);
+  const [showTimeSelesaiPicker, setShowTimeSelesaiPicker] = useState(false);
+
   const [catatan, setCatatan] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const kategoriOptions = ['Kuliah', 'Tugas', 'Organisasi'];
 
-  const convertTanggal = (input: string) => {
-    if (!input.includes('/')) return input;
-    const [dd, mm, yyyy] = input.split('/');
-    return `${yyyy}-${mm}-${dd}`;
+  /* ===== HANDLER ===== */
+  const onChangeTanggal = (_: any, selected?: Date) => {
+    setShowDatePicker(false);
+    if (selected) setTanggal(selected);
   };
 
-  const convertWaktu = (input: string) => {
-    if (input.length === 5) return input + ':00';
-    return input;
+  const onChangeWaktuMulai = (_: any, selected?: Date) => {
+    setShowTimeMulaiPicker(false);
+    if (selected) {
+      setWaktuMulaiDate(selected);
+      setWaktuMulai(
+        selected.toLocaleTimeString('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      );
+    }
   };
+
+  const onChangeWaktuSelesai = (_: any, selected?: Date) => {
+    setShowTimeSelesaiPicker(false);
+    if (selected) {
+      setWaktuSelesaiDate(selected);
+      setWaktuSelesai(
+        selected.toLocaleTimeString('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      );
+    }
+  };
+
+  const convertWaktu = (input: string) =>
+    input.length === 5 ? input + ':00' : input;
 
   const handleSimpan = async () => {
-    if (!nama_kegiatan || kategori === 'Pilih opsi' || !tanggal || !waktu_mulai || !waktu_selesai) {
+    if (
+      !nama_kegiatan ||
+      kategori === 'Pilih opsi' ||
+      !waktu_mulai ||
+      !waktu_selesai
+    ) {
       Alert.alert('Peringatan', 'Semua field wajib diisi!');
       return;
     }
@@ -54,7 +102,7 @@ const TambahKegiatan: React.FC = () => {
       const response = await api.post('/tambahkegiatan', {
         nama_kegiatan,
         kategori,
-        tanggal: convertTanggal(tanggal),
+        tanggal: tanggal.toISOString().split('T')[0],
         waktu_mulai: convertWaktu(waktu_mulai),
         waktu_selesai: convertWaktu(waktu_selesai),
         catatan: catatan || null,
@@ -64,8 +112,6 @@ const TambahKegiatan: React.FC = () => {
         Alert.alert('Sukses', 'Kegiatan berhasil ditambahkan!', [
           { text: 'OK', onPress: () => router.push('/(tabs)/pages/home') },
         ]);
-      } else {
-        Alert.alert('Gagal', response.data.message);
       }
     } catch {
       Alert.alert('Error', 'Gagal terhubung ke server');
@@ -74,20 +120,17 @@ const TambahKegiatan: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-
-      {/* HEADER (SAMA DENGAN TAMBAH TUGAS) */}
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>Tambah Kegiatan </Text>
+        <Text style={styles.header}>Tambah Kegiatan</Text>
         <View style={styles.line} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-
         <FormRow label="Nama kegiatan">
           <TextInput
             value={nama_kegiatan}
             onChangeText={setNamaKegiatan}
-            placeholder="Nama Kegiatan"
+            placeholder="Nama kegiatan"
             mode="outlined"
             style={styles.textInput}
             dense
@@ -103,7 +146,10 @@ const TambahKegiatan: React.FC = () => {
               contentStyle={{ justifyContent: 'space-between' }}
             >
               {kategori}
-              <Ionicons name={dropdownOpen ? 'chevron-up' : 'chevron-down'} size={16} />
+              <Ionicons
+                name={dropdownOpen ? 'chevron-up' : 'chevron-down'}
+                size={16}
+              />
             </Button>
 
             {dropdownOpen && (
@@ -125,37 +171,78 @@ const TambahKegiatan: React.FC = () => {
           </View>
         </FormRow>
 
+        {/* ===== TANGGAL (TAMPILAN TIDAK BERUBAH) ===== */}
         <FormRow label="Tanggal">
-          <TextInput
-            value={tanggal}
-            onChangeText={setTanggal}
-            placeholder="DD/MM/YYYY"
-            mode="outlined"
-            style={styles.textInput}
-            dense
-          />
+          <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+            <TextInput
+              value={tanggal.toLocaleDateString('id-ID')}
+              placeholder="DD/MM/YYYY"
+              mode="outlined"
+              style={styles.textInput}
+              dense
+              editable={false}
+              pointerEvents="none"
+            />
+          </TouchableOpacity>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={tanggal}
+              mode="date"
+              display="default"
+              onChange={onChangeTanggal}
+            />
+          )}
         </FormRow>
 
+        {/* ===== WAKTU MULAI ===== */}
         <FormRow label="Waktu Mulai">
-          <TextInput
-            value={waktu_mulai}
-            onChangeText={setWaktuMulai}
-            placeholder="HH:MM"
-            mode="outlined"
-            style={styles.textInput}
-            dense
-          />
+          <TouchableOpacity onPress={() => setShowTimeMulaiPicker(true)}>
+            <TextInput
+              value={waktu_mulai}
+              placeholder="HH:MM"
+              mode="outlined"
+              style={styles.textInput}
+              dense
+              editable={false}
+              pointerEvents="none"
+            />
+          </TouchableOpacity>
+
+          {showTimeMulaiPicker && (
+            <DateTimePicker
+              value={waktuMulaiDate}
+              mode="time"
+              is24Hour
+              display="default"
+              onChange={onChangeWaktuMulai}
+            />
+          )}
         </FormRow>
 
+        {/* ===== WAKTU SELESAI ===== */}
         <FormRow label="Waktu Selesai">
-          <TextInput
-            value={waktu_selesai}
-            onChangeText={setWaktuSelesai}
-            placeholder="HH:MM"
-            mode="outlined"
-            style={styles.textInput}
-            dense
-          />
+          <TouchableOpacity onPress={() => setShowTimeSelesaiPicker(true)}>
+            <TextInput
+              value={waktu_selesai}
+              placeholder="HH:MM"
+              mode="outlined"
+              style={styles.textInput}
+              dense
+              editable={false}
+              pointerEvents="none"
+            />
+          </TouchableOpacity>
+
+          {showTimeSelesaiPicker && (
+            <DateTimePicker
+              value={waktuSelesaiDate}
+              mode="time"
+              is24Hour
+              display="default"
+              onChange={onChangeWaktuSelesai}
+            />
+          )}
         </FormRow>
 
         <FormRow label="Catatan">
@@ -170,7 +257,6 @@ const TambahKegiatan: React.FC = () => {
           />
         </FormRow>
 
-        {/* BUTTON (SAMA PERSIS DENGAN TAMBAH TUGAS) */}
         <View style={styles.buttonContainer}>
           <Button
             mode="contained"
@@ -190,7 +276,6 @@ const TambahKegiatan: React.FC = () => {
             Simpan
           </Button>
         </View>
-
       </ScrollView>
 
       <BottomNav />
@@ -204,8 +289,18 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
 
   headerContainer: { marginTop: 20, marginBottom: 10, paddingHorizontal: 20 },
-  header: { fontSize: 30, fontWeight: '700', textAlign: 'center', color: '#3E2CD2' },
-  line: { height: 2, backgroundColor: '#E6D6F7', marginTop: 8, marginHorizontal: -20 },
+  header: {
+    fontSize: 30,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: '#3E2CD2',
+  },
+  line: {
+    height: 2,
+    backgroundColor: '#E6D6F7',
+    marginTop: 8,
+    marginHorizontal: -20,
+  },
 
   scrollContent: { padding: 20, paddingBottom: 120 },
 
@@ -227,7 +322,6 @@ const styles = StyleSheet.create({
     zIndex: 99,
   },
 
-  /* BUTTON STYLE (DIAMBIL DARI TAMBAH TUGAS) */
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
