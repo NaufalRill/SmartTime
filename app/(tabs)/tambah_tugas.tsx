@@ -226,7 +226,7 @@ const styles  = StyleSheet.create({
   line: {
     width: "100%",
     height: 2,
-    backgroundColor: "#E5D9FA",
+    backgroundColor: "#6213eaff",
     marginTop: 8,
     marginBottom: 12,
   },
@@ -291,9 +291,9 @@ const styles  = StyleSheet.create({
   /* PICKER INSIDE FORM */
   inputPickerWrapper: {
     borderWidth: 1,
-    borderColor: "#C9C9C9",
+    borderColor: "#761313ff",
     borderRadius: 8,
-    backgroundColor: "#F8F8F8",
+    backgroundColor: "#160101ff",
     height: 36,
     justifyContent: "center",
   },
