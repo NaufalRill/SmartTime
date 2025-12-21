@@ -5,6 +5,8 @@ import React, { useState, useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../../service/api';
 
+import { useAuth } from "../../service/AuthContext";
+
 interface Task {
   id: number;
   judul: string;
@@ -12,7 +14,9 @@ interface Task {
   progress: number;
 }
 
+
 export default function HomeScreen() {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const [currentFilter, setCurrentFilter] = useState("Semua"); // Default 'Semua'
@@ -68,7 +72,8 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Smart Time</Text>
-
+      <Text>Selamat Datang, {user?.username}!</Text>
+      <Text>ID Anda adalah: {user?.id}</Text>
       <View style={styles.line} />
 
       {/* Filter Row */}

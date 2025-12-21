@@ -2,8 +2,10 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { useRouter } from "expo-router"; 
 import api from "../service/api";  
+import { useAuth } from "../service/AuthContext";
 
 export default function LoginScreen() {
+  const { signIn } = useAuth();
   const router = useRouter(); 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -21,17 +23,15 @@ export default function LoginScreen() {
 
     try {
 
-      const response = await api.post('/login', {
-      username: username,
-      password: password,
-  });
+      const response = await api.post('/login', { username, password});
  
       if (response.data.success) {
-                  console.log("Berhasil:", response.data.message);
-                  router.replace("/(tabs)/pages/home");
-                  } else {
-                    Alert.alert("Gagal", response.data.fail || "Gagal Login.");
-                  }
+        await signIn(response.data.user);
+        console.log("Berhasil: User ID: ", response.data.user.id);
+        router.replace("/(tabs)/pages/home");
+        } else {
+          Alert.alert("Gagal", response.data.fail || "Gagal Login.");
+        }
 
     } catch (error) {
       console.error(error);

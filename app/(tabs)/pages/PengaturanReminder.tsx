@@ -10,25 +10,33 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
+import { useAuth } from "../../service/AuthContext";
 
-const PengaturanReminder = () => {
+export default function PengaturanReminder() {
   const [notifSound, setNotifSound] = useState(true);
   const [popupVisible, setPopupVisible] = useState(false);
 
-  const handleLogout = () => {
-    setPopupVisible(false);
-    router.push("/auth/login");
+
+  const { signOut } = useAuth();
+
+
+  const handleLogout = async () => {
+    try {
+      setPopupVisible(false);
+      await signOut();
+      router.replace("/auth/login");
+    } catch (error) {
+      console.error("Gagal Logout:", error);
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* Title */}
-      <Text style={styles.title}>Pengaturan</Text>
+      <Text style={styles.title}>Pengaturan nih</Text>
 
-      {/* Divider */}
       <View style={styles.divider} />
 
-      {/* Notification Sound Toggle */}
+      {/* Konten Lainnya tetap sama */}
       <View style={styles.settingBox}>
         <Text style={styles.settingText}>Suara notifikasi On/Off</Text>
         <Switch
@@ -38,24 +46,17 @@ const PengaturanReminder = () => {
         />
       </View>
 
-      {/* Default Time */}
       <TouchableOpacity style={styles.settingBox}>
         <Text style={styles.settingText}>Default Waktu Pengingat : 20:00</Text>
       </TouchableOpacity>
 
-      {/* Motivational Message */}
       <TouchableOpacity style={styles.settingBox}>
-        <Text style={styles.settingText}>
-          Pesan Motivasi : Aktif / Nonaktif
-        </Text>
+        <Text style={styles.settingText}>Pesan Motivasi : Aktif / Nonaktif</Text>
         <Ionicons name="chevron-forward-outline" size={20} color="#444" />
       </TouchableOpacity>
 
-      {/* Theme */}
       <TouchableOpacity style={styles.settingBox}>
-        <Text style={styles.settingText}>
-          Tema Notifikasi : Terang / Gelap
-        </Text>
+        <Text style={styles.settingText}>Tema Notifikasi : Terang / Gelap</Text>
         <Ionicons name="chevron-forward-outline" size={20} color="#444" />
       </TouchableOpacity>
 
@@ -71,10 +72,7 @@ const PengaturanReminder = () => {
       <Modal transparent visible={popupVisible} animationType="fade">
         <View style={styles.modalBackground}>
           <View style={styles.popupBox}>
-            <Text style={styles.popupText}>
-              Apakah Anda Yakin Untuk Logout ?
-            </Text>
-
+            <Text style={styles.popupText}>Apakah Anda Yakin Untuk Logout ?</Text>
             <View style={styles.popupBtnRow}>
               <TouchableOpacity
                 style={styles.cancelBtn}
@@ -82,7 +80,6 @@ const PengaturanReminder = () => {
               >
                 <Text style={styles.cancelText}>Batal</Text>
               </TouchableOpacity>
-
               <TouchableOpacity style={styles.okBtn} onPress={handleLogout}>
                 <Text style={styles.okText}>Logout</Text>
               </TouchableOpacity>
@@ -91,14 +88,12 @@ const PengaturanReminder = () => {
         </View>
       </Modal>
 
-      {/* Bottom Navigation */}
       <BottomNav />
     </View>
   );
-};
+}
 
-export default PengaturanReminder;
-
+// Styles tetap sama seperti sebelumnya...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -106,22 +101,18 @@ const styles = StyleSheet.create({
     paddingTop: 70,
     paddingHorizontal: 20,
   },
-
   title: {
     fontSize: 28,
     fontWeight: "700",
     color: "#3E2CD2",
     textAlign: "center",
   },
-
   divider: {
     height: 2,
     backgroundColor: "#E6DBF5",
     marginHorizontal: -20,
     marginVertical: 15,
   },
-
-
   settingBox: {
     backgroundColor: "#fff",
     padding: 14,
@@ -133,12 +124,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
-
   settingText: {
     fontSize: 15,
     color: "#333",
   },
-
   logoutBtn: {
     marginTop: 25,
     alignSelf: "center",
@@ -147,21 +136,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 10,
   },
-
   logoutText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },
-
-  /* POPUP */
   modalBackground: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
-
   popupBox: {
     width: 260,
     backgroundColor: "#3F34D1",
@@ -169,39 +154,33 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: "center",
   },
-
   popupText: {
     color: "#fff",
     fontSize: 14,
     textAlign: "center",
     marginBottom: 20,
   },
-
   popupBtnRow: {
     flexDirection: "row",
     gap: 15,
   },
-
   cancelBtn: {
     backgroundColor: "#4CD964",
     paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 10,
   },
-
   cancelText: {
     color: "#fff",
     fontSize: 14,
     fontWeight: "600",
   },
-
   okBtn: {
     backgroundColor: "#FF3B30",
     paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 10,
   },
-
   okText: {
     color: "#fff",
     fontSize: 14,
