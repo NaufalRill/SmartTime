@@ -107,6 +107,7 @@ db.query(
 // Route CREATE TUGAS
 app.post('/api/tambahtugas', (req, res) => {
     const { 
+        id_user,
         filter = null, 
         judul, 
         deskripsi = null, 
@@ -117,6 +118,12 @@ app.post('/api/tambahtugas', (req, res) => {
     } = req.body;
 
     // Validasi wajib
+    if (!id_user) {
+        return res.status(400).json({
+            success: false,
+            message: "ID User tidak ditemukan. Pastikan Anda sudah login"
+        });
+    }
     if (!judul || judul.trim() === "") {
         return res.status(400).json({
             success: false,
@@ -127,13 +134,13 @@ app.post('/api/tambahtugas', (req, res) => {
     // Query Insert
     const sql = `
         INSERT INTO tambahtugas 
-        (filter, judul, deskripsi, deadline, kesulitan, prioritas, progress)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        (id_user, filter, judul, deskripsi, deadline, kesulitan, prioritas, progress)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.query(
         sql,
-        [filter, judul, deskripsi, deadline, kesulitan, prioritas, progress],
+        [id_user, filter, judul, deskripsi, deadline, kesulitan, prioritas, progress],
         (err, result) => {
             if (err) {
                 console.error("Error INSERT tugas:", err);
@@ -202,17 +209,21 @@ app.post('/api/tambahpengingat', (req, res) => {
 // GET Tugas dengan Filter (Query Parameter)
 app.get('/api/tugas', (req, res) => {
     // 1. Tangkap parameter 'kategori' dari URL (misal: ?kategori=Kuliah)
-    const { kategori } = req.query; 
+    const { id_user, kategori } = req.query; 
 
-    console.log("--> Request Filter masuk:", kategori);
+    console.log("--> Request Filter masuk untuk User ID:", id_user, "Kategori:", kategori);
 
-    let sql = "SELECT * FROM tambahtugas";
-    let params = [];
+    if (!id_user) {
+        return res.status(400).json({ success: false, message: "ID User wajib disertakan!" });
+    }
+
+    let sql = "SELECT * FROM tambahtugas where id_user = ?"; 
+    let params = [id_user];
 
     // 2. Jika ada kategori dan bukan 'Semua', tambahkan WHERE
     if (kategori && kategori !== 'Semua' && kategori !== '') {
         // Pastikan nama kolom di database adalah 'filter' (sesuai gambar Anda)
-        sql += " WHERE filter = ?"; 
+        sql += " AND filter = ?"; 
         params.push(kategori);
     }
 

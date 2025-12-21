@@ -25,11 +25,14 @@ export default function HomeScreen() {
   const filterOptions = [ "Semua", "Tugas", "Kuliah", "Organisasi"]; // Sesuaikan opsi database
 
   const fetchTasks = async (kategoriDipilih : string) => {
+    if (!user?.id) return;
+
     try {
       const param = kategoriDipilih === "Semua" ? "" : `?kategori=${kategoriDipilih}`;
       const response = await api.get('/tugas', {
         params: {
-            kategori: kategoriDipilih // Ini akan menjadi ?kategori=...
+            id_user: user.id,
+            kategori: kategoriDipilih 
         }
       });
       const json = response.data;
@@ -45,7 +48,7 @@ export default function HomeScreen() {
     useFocusEffect(
     useCallback(() => {
       fetchTasks(currentFilter);
-    }, [currentFilter])
+    }, [user, currentFilter])
   );
 
     const calculateDaysLeft = (deadlineDate : string) => {
@@ -72,8 +75,6 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Smart Time</Text>
-      <Text>Selamat Datang, {user?.username}!</Text>
-      <Text>ID Anda adalah: {user?.id}</Text>
       <View style={styles.line} />
 
       {/* Filter Row */}

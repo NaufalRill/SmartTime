@@ -17,10 +17,11 @@ import { useRouter } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import api from '../service/api';
+import { useAuth } from "../service/AuthContext";
 
 export default function TambahTugasScreen() {
   const router = useRouter();
-
+  const { user } = useAuth();
   const [judul, setJudul] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
 
@@ -57,22 +58,26 @@ export default function TambahTugasScreen() {
 
 
 const handleSave = async () => {
+    if (!user || !user.id) {
+      Alert.alert("Error", "ID User tidak ditemukan. Pastikan Anda sudah login.");
+      return;
+    }
+
     if (!judul) {
       Alert.alert("Error", "Judul tugas wajib diisi!");
       return;
     }
-    // (Validasi lain tetap sama...)
+
 
     setIsLoading(true);
 
-    // --- PERBAIKAN UTAMA DISINI ---
     // Ubah format Date Javascript menjadi String "YYYY-MM-DD" untuk MySQL
     const formattedDeadline = deadline.toISOString().split('T')[0];
-    // -----------------------------
 
     try {
      
       const response = await api.post('/tambahtugas', {
+      id_user: user.id,
       filter,
       judul,
       deskripsi,
