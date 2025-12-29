@@ -14,9 +14,11 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { BottomNav } from "@/components/bottomnav";
 import api from "../../service/api";
+import { useAuth } from "../../service/AuthContext"; // ✅ TAMBAHAN
 
 export default function TambahPengingat() {
   const router = useRouter();
+  const { user } = useAuth(); // ✅ AMBIL USER LOGIN
 
   const [namaTugas, setNamaTugas] = useState("");
 
@@ -35,6 +37,12 @@ export default function TambahPengingat() {
   const jenisOptions = ["Pop-Up", "Kalender", "Pesan"];
 
   const handleSave = async () => {
+    // 🔒 VALIDASI USER
+    if (!user || !user.id) {
+      Alert.alert("Error", "ID User tidak ditemukan. Silakan login ulang.");
+      return;
+    }
+
     if (
       !namaTugas ||
       !date ||
@@ -52,6 +60,7 @@ export default function TambahPengingat() {
 
     try {
       const response = await api.post("/tambahpengingat", {
+        id_user: user.id, 
         nama_tugas: namaTugas,
         jam,
         menit,
@@ -64,7 +73,7 @@ export default function TambahPengingat() {
         Alert.alert("Berhasil", "Pengingat berhasil ditambahkan!");
         router.push("/(tabs)/pages/home");
       } else {
-        Alert.alert("Gagal", response.data.message);
+        Alert.alert("Gagal", response.data.message || "Gagal menyimpan pengingat");
       }
     } catch (error) {
       console.log(error);
@@ -87,14 +96,12 @@ export default function TambahPengingat() {
 
         {/* Nama Tugas */}
         <Text style={styles.label}>Nama Tugas</Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Nama Tugas"
-            value={namaTugas}
-            onChangeText={setNamaTugas}
-          />
-
+        <TextInput
+          style={styles.input}
+          placeholder="Nama Tugas"
+          value={namaTugas}
+          onChangeText={setNamaTugas}
+        />
 
         {/* Waktu */}
         <Text style={styles.label}>Waktu Pengingat</Text>
@@ -170,7 +177,10 @@ export default function TambahPengingat() {
 
         {/* Buttons */}
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.btnCancel}>
+          <TouchableOpacity
+            style={styles.btnCancel}
+            onPress={() => router.back()}
+          >
             <Text style={styles.btnCancelText}>Batal</Text>
           </TouchableOpacity>
 
