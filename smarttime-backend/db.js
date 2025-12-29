@@ -1,19 +1,20 @@
+require('dotenv').config();
 const mysql = require('mysql');
 
-// Konfigurasi koneksi (Standar XAMPP)
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',      // User default XAMPP
-    password: '',      // Password default XAMPP biasanya kosong
-    database: 'smarttime_db' // Nama database yang kita buat tadi
+    host: process.env.DB_HOST,      // interchange.proxy.rlwy.net
+    port: process.env.DB_PORT,      // 16541
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,  // 'railway'
 });
 
 db.connect((err) => {
     if (err) {
-        console.error('Error koneksi ke MySQL:', err);
-    } else {
-        console.log('Berhasil terhubung ke Database MySQL!');
+        console.error('Gagal terhubung ke database Railway:', err.message);
+        return;
     }
+    console.log('Berhasil terhubung ke MySQL Railway!');
 });
 
 module.exports = db;
