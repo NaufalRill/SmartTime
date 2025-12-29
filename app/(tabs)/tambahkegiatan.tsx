@@ -57,18 +57,18 @@ const TambahKegiatan: React.FC = () => {
     if (selected) setTanggal(selected);
   };
 
-  const onChangeWaktuMulai = (_: any, selected?: Date) => {
-    setShowTimeMulaiPicker(false);
-    if (selected) {
-      setWaktuMulaiDate(selected);
-      setWaktuMulai(
-        selected.toLocaleTimeString('id-ID', {
-          hour: '2-digit',
-          minute: '2-digit',
-        })
-      );
-    }
-  };
+ // Contoh untuk Waktu Mulai
+const onChangeWaktuMulai = (_: any, selected?: Date) => {
+  setShowTimeMulaiPicker(false);
+  if (selected) {
+    setWaktuMulaiDate(selected);
+    
+    // PERBAIKAN: Gunakan format yang menjamin titik dua (HH:mm)
+    const jam = selected.getHours().toString().padStart(2, '0');
+    const menit = selected.getMinutes().toString().padStart(2, '0');
+    setWaktuMulai(`${jam}:${menit}`); 
+  }
+};
 
   const onChangeWaktuSelesai = (_: any, selected?: Date) => {
     setShowTimeSelesaiPicker(false);
@@ -83,8 +83,11 @@ const TambahKegiatan: React.FC = () => {
     }
   };
 
-  const convertWaktu = (input: string) =>
-    input.length === 5 ? input + ':00' : input;
+  const convertWaktu = (input: string) => {
+  // Pastikan input menggunakan titik dua dan tambahkan detik
+  const formattedInput = input.replace('.', ':'); 
+  return formattedInput.length === 5 ? formattedInput + ':00' : formattedInput;
+};
 
   // ============================
   // 🔥 HANDLE SIMPAN (DISESUAIKAN)
