@@ -14,6 +14,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { BottomNav } from '@/components/bottomnav';
 import api from '../service/api';
+import { useAuth } from '../service/AuthContext'; // ✅ TAMBAHAN
 
 interface FormRowProps {
   label: string;
@@ -29,6 +30,7 @@ const FormRow: React.FC<FormRowProps> = ({ label, children }) => (
 
 const TambahKegiatan: React.FC = () => {
   const router = useRouter();
+  const { user } = useAuth(); // ✅ AMBIL USER LOGIN
 
   const [nama_kegiatan, setNamaKegiatan] = useState('');
   const [kategori, setKategori] = useState('Pilih opsi');
@@ -84,7 +86,16 @@ const TambahKegiatan: React.FC = () => {
   const convertWaktu = (input: string) =>
     input.length === 5 ? input + ':00' : input;
 
+  // ============================
+  // 🔥 HANDLE SIMPAN (DISESUAIKAN)
+  // ============================
   const handleSimpan = async () => {
+    // 🔒 VALIDASI USER
+    if (!user || !user.id) {
+      Alert.alert('Error', 'ID User tidak ditemukan. Silakan login ulang.');
+      return;
+    }
+
     if (
       !nama_kegiatan ||
       kategori === 'Pilih opsi' ||
@@ -97,6 +108,7 @@ const TambahKegiatan: React.FC = () => {
 
     try {
       const response = await api.post('/tambahkegiatan', {
+        id_user: user.id, // ✅ SIMPAN ID USER
         nama_kegiatan,
         kategori,
         tanggal: tanggal.toISOString().split('T')[0],
@@ -109,8 +121,11 @@ const TambahKegiatan: React.FC = () => {
         Alert.alert('Sukses', 'Kegiatan berhasil ditambahkan!', [
           { text: 'OK', onPress: () => router.push('/(tabs)/pages/home') },
         ]);
+      } else {
+        Alert.alert('Gagal', response.data.message || 'Gagal menyimpan kegiatan');
       }
-    } catch {
+    } catch (error) {
+      console.log(error);
       Alert.alert('Error', 'Gagal terhubung ke server');
     }
   };
@@ -118,7 +133,7 @@ const TambahKegiatan: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>Tambah Kegiatan </Text>
+        <Text style={styles.header}>Tambah Kegiatan</Text>
         <View style={styles.line} />
       </View>
 
@@ -127,7 +142,7 @@ const TambahKegiatan: React.FC = () => {
           <TextInput
             value={nama_kegiatan}
             onChangeText={setNamaKegiatan}
-            placeholder="Nama Kegiatan" // isi nama kegiatan
+            placeholder="Nama Kegiatan"
             mode="outlined"
             style={styles.textInput}
             dense
@@ -172,7 +187,6 @@ const TambahKegiatan: React.FC = () => {
           <TouchableOpacity onPress={() => setShowDatePicker(true)}>
             <TextInput
               value={tanggal.toLocaleDateString('id-ID')}
-              placeholder="DD/MM/YYYY" // pilih tanggal
               mode="outlined"
               style={styles.textInput}
               dense
@@ -272,6 +286,7 @@ const TambahKegiatan: React.FC = () => {
 };
 
 export default TambahKegiatan;
+
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
