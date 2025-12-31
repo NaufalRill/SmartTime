@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
-import { Link, useRouter } from "expo-router"; // Import useRouter
-import api from "../service/api";  
+import { Link, useRouter, Stack } from "expo-router"; // Import useRouter
+import api from "../service/api";
+
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -48,6 +49,7 @@ export default function RegisterScreen() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
       <Text style={styles.title}>Smart Time</Text>
 
       {/* EMAIL */}

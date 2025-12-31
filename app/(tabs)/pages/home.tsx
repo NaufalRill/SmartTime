@@ -51,8 +51,12 @@ export default function HomeScreen() {
     }, [user, currentFilter])
   );
 
-    const calculateDaysLeft = (deadlineDate : string) => {
+
+
+    const calculateDaysLeft = (deadlineDate : string, progress: number) => {
       if (!deadlineDate) return "Tanpa Tanggal";
+
+      if (progress === 100) return ( <Text style={{ color: 'lime' }}>Selesai</Text> );
 
       const today = new Date();
       const due = new Date(deadlineDate);
@@ -60,7 +64,9 @@ export default function HomeScreen() {
       const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
       if (daysDiff < 0) return ( <Text style={{ color: 'red' }}>Tanggal Terlewat</Text> );
-      if (daysDiff === 0) return ( <Text style={{ color: 'red' }}>Deadline Hari Ini</Text> );
+      if (daysDiff === 0)
+        return ( <Text style={{ color: 'red' }}>Deadline Hari Ini</Text> );
+  
       return `${daysDiff} Hari Lagi`;
     };
 
@@ -130,7 +136,8 @@ export default function HomeScreen() {
               {item.judul}
             </Link>
             <Text style={styles.cardSub}>
-              {calculateDaysLeft(item.deadline)}
+
+              {calculateDaysLeft(item.deadline, item.progress)}
             </Text>
 
             {/* Progress Bar */}

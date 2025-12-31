@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
-import { useRouter } from "expo-router"; 
+import { useRouter, Stack } from "expo-router"; 
 import api from "../service/api";  
 import { useAuth } from "../service/AuthContext";
+
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
@@ -43,6 +44,7 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
       <Text style={styles.title}>Smart Time</Text>
 
       <View style={styles.formGroup}>
