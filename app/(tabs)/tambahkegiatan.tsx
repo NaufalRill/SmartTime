@@ -107,7 +107,7 @@ const onChangeWaktuMulai = (_: any, selected?: Date) => {
 
     try {
       const response = await api.post('/tambahkegiatan', {
-        id_user: user.id, // ✅ SIMPAN ID USER
+        id_user: user.id,
         nama_kegiatan,
         kategori,
         tanggal: tanggal.toISOString().split('T')[0],
