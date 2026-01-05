@@ -267,7 +267,6 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
 
-  // Styles Progress Bar
   progressContainer: {
     marginTop: 10,
   },
