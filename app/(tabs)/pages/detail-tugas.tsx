@@ -37,8 +37,6 @@ export default function DetailScreen() {
 
   const fetchDetail = async () => {
     try {
-      // 3. Panggil API berdasarkan ID (Pastikan backend mendukung route ini)
-      // Contoh endpoint: GET /api/tugas/5
       const response = await api.get(`/tugas/${id}`);
       
       if (response.data.success) {
@@ -243,7 +241,6 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   
-  // Styles Bagian Status
   statusContainer: {
     marginBottom: 30,
   },
@@ -270,7 +267,6 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
 
-  // Styles Progress Bar
   progressContainer: {
     marginTop: 10,
   },
@@ -286,7 +282,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  // Styles Tombol Aksi
   actionContainer: {
     alignItems: 'center',
     gap: 15,
