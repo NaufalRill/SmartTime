@@ -22,7 +22,7 @@ export default function HomeScreen() {
   const [currentFilter, setCurrentFilter] = useState("Semua");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   
-  const filterOptions = [ "Semua", "Tugas", "Kuliah", "Organisasi"]; // Sesuaikan opsi database
+  const filterOptions = [ "Semua", "Tugas", "Kuliah", "Organisasi"];
 
   const fetchTasks = async (kategoriDipilih : string) => {
     if (!user?.id) return;
