@@ -419,24 +419,49 @@ app.patch('/api/tugas/:id', (req, res) => {
 // GET SEMUA PENGINGAT (UNTUK NOTIFIKASI)
 // =======================
 app.get('/api/pengingat', (req, res) => {
-    const sql = `
+    // 1. Tangkap parameter id_user dari query
+    const { id_user } = req.query;
+
+    console.log("--> Request Pengingat masuk untuk User ID:", id_user);
+
+    // 2. Validasi id_user
+    if (!id_user) {
+        return res.status(400).json({
+            success: false,
+            message: "ID User wajib disertakan!"
+        });
+    }
+
+    // 3. Query dasar (HANYA berdasarkan id_user)
+    let sql = `
         SELECT id, nama_tugas, tanggal, jam, menit, frekuensi, jenis_pengingat
         FROM tambahpengingat
+        WHERE id_user = ?
         ORDER BY tanggal ASC, jam ASC, menit ASC
     `;
+    let params = [id_user];
 
-    db.query(sql, (err, result) => {
+    console.log("--> Menjalankan SQL:", sql);
+    console.log("--> Parameter:", params);
+
+    // 4. Eksekusi query
+    db.query(sql, params, (err, result) => {
         if (err) {
-            console.error("Error GET pengingat:", err);
+            console.error("Error SELECT pengingat:", err);
             return res.status(500).json({
                 success: false,
-                message: "Gagal mengambil data pengingat"
+                message: "Error DB"
             });
         }
 
-        res.json(result); // ⬅️ langsung array, cocok untuk React Native
+        res.json({
+            success: true,
+            data: result
+        });
     });
 });
+
+
 
 
 
