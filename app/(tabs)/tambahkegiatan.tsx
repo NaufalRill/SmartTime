@@ -88,9 +88,6 @@ const onChangeWaktuMulai = (_: any, selected?: Date) => {
   return formattedInput.length === 5 ? formattedInput + ':00' : formattedInput;
 };
 
-  // ============================
-  // 🔥 HANDLE SIMPAN (DISESUAIKAN)
-  // ============================
   const handleSimpan = async () => {
     // 🔒 VALIDASI USER
     if (!user || !user.id) {
