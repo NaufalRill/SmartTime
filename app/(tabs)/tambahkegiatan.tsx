@@ -57,7 +57,7 @@ const TambahKegiatan: React.FC = () => {
     if (selected) setTanggal(selected);
   };
 
- // Contoh untuk Waktu Mulai
+
 const onChangeWaktuMulai = (_: any, selected?: Date) => {
   setShowTimeMulaiPicker(false);
   if (selected) {
