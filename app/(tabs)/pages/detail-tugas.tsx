@@ -37,7 +37,6 @@ export default function DetailScreen() {
 
   const fetchDetail = async () => {
     try {
-      // 3. Panggil API berdasarkan ID (Pastikan backend mendukung route ini)
       // Contoh endpoint: GET /api/tugas/5
       const response = await api.get(`/tugas/${id}`);
       
