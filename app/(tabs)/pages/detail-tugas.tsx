@@ -37,7 +37,6 @@ export default function DetailScreen() {
 
   const fetchDetail = async () => {
     try {
-      // Contoh endpoint: GET /api/tugas/5
       const response = await api.get(`/tugas/${id}`);
       
       if (response.data.success) {
