@@ -248,7 +248,7 @@ export default function TambahPengingat() {
   );
 }
 
-/* ===================== STYLES (TIDAK DIUBAH) ===================== */
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
