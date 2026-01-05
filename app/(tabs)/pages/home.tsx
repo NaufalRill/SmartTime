@@ -19,10 +19,10 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const [currentFilter, setCurrentFilter] = useState("Semua"); // Default 'Semua'
-  const [isFilterOpen, setIsFilterOpen] = useState(false); // Untuk buka/tutup dropdown
+  const [currentFilter, setCurrentFilter] = useState("Semua");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   
-  const filterOptions = [ "Semua", "Tugas", "Kuliah", "Organisasi"]; // Sesuaikan opsi database
+  const filterOptions = [ "Semua", "Tugas", "Kuliah", "Organisasi"];
 
   const fetchTasks = async (kategoriDipilih : string) => {
     if (!user?.id) return;
@@ -72,8 +72,7 @@ export default function HomeScreen() {
 
     const handleSelectFilter = (filterName: string) => {
     setCurrentFilter(filterName);
-    setIsFilterOpen(false); // Tutup dropdown
-    // useEffect/useFocusEffect akan otomatis mendeteksi perubahan state dan reload data
+    setIsFilterOpen(false);
   };
 
   
@@ -129,7 +128,7 @@ export default function HomeScreen() {
             <Link 
               href={{
                 pathname: "/(tabs)/pages/detail-tugas",
-                params: { id: item.id } // <-- Mengirim ID tugas ke halaman tujuan
+                params: { id: item.id } 
               }} 
               style={styles.cardTitle}
             >
