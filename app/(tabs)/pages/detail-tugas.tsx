@@ -267,7 +267,6 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
 
-  // Styles Progress Bar
   progressContainer: {
     marginTop: 10,
   },
@@ -283,7 +282,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  // Styles Tombol Aksi
   actionContainer: {
     alignItems: 'center',
     gap: 15,
