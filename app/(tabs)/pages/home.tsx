@@ -139,11 +139,11 @@ export default function HomeScreen() {
               {calculateDaysLeft(item.deadline, item.progress)}
             </Text>
 
-            {/* Progress Bar */}
+            {/* Progress Bar */}    
             <View style={styles.progressBg}>
               <View style={[styles.progressFill, { width: `${item.progress }%` }]} />
-            </View>
-          </View>
+            </View> 
+          </View> // menampilkan  proges bar
 
 
         ))}
