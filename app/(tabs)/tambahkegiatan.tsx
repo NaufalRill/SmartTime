@@ -89,7 +89,7 @@ const onChangeWaktuMulai = (_: any, selected?: Date) => {
 };
 
   const handleSimpan = async () => {
-    // 🔒 VALIDASI USER
+
     if (!user || !user.id) {
       Alert.alert('Error', 'ID User tidak ditemukan. Silakan login ulang.');
       return;
