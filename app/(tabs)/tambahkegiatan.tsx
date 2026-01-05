@@ -63,7 +63,6 @@ const onChangeWaktuMulai = (_: any, selected?: Date) => {
   if (selected) {
     setWaktuMulaiDate(selected);
     
-    // PERBAIKAN: Gunakan format yang menjamin titik dua (HH:mm)
     const jam = selected.getHours().toString().padStart(2, '0');
     const menit = selected.getMinutes().toString().padStart(2, '0');
     setWaktuMulai(`${jam}:${menit}`); 
