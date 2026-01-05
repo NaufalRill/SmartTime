@@ -30,7 +30,7 @@ export default function NotifikasiScreen() {
         setData([]);
       }
     } catch (error) {
-      console.log("Gagal mengambil pengingat:", error); //notif gagal mengambil pengingat
+      console.log("Gagal mengambil pengingat:", error); 
     }
   };
 
