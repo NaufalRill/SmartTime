@@ -112,10 +112,10 @@ export default function HomeScreen() {
                                 {option}
                             </Text>
                         </TouchableOpacity>
-                    ))}
-                </View>
+                    ))} 
+                </View> // menampikan dropdown menu kebawah
             )}
-        </View>
+        </View> 
 
         <TouchableOpacity style={styles.fastBtn}>
           <Link href="/(tabs)/pages/tambahpengingat" style={styles.fastText}>Pengingat Cepat</Link>
