@@ -128,7 +128,7 @@ export default function HomeScreen() {
             <Link 
               href={{
                 pathname: "/(tabs)/pages/detail-tugas",
-                params: { id: item.id } // <-- Mengirim ID tugas ke halaman tujuan
+                params: { id: item.id } 
               }} 
               style={styles.cardTitle}
             >
