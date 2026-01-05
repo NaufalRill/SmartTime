@@ -14,7 +14,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { BottomNav } from '@/components/bottomnav';
 import api from '../service/api';
-import { useAuth } from '../service/AuthContext'; // ✅ TAMBAHAN
+import { useAuth } from '../service/AuthContext'; 
 
 interface FormRowProps {
   label: string;
@@ -30,7 +30,7 @@ const FormRow: React.FC<FormRowProps> = ({ label, children }) => (
 
 const TambahKegiatan: React.FC = () => {
   const router = useRouter();
-  const { user } = useAuth(); // ✅ AMBIL USER LOGIN
+  const { user } = useAuth();
 
   const [nama_kegiatan, setNamaKegiatan] = useState('');
   const [kategori, setKategori] = useState('Pilih opsi');
@@ -57,13 +57,12 @@ const TambahKegiatan: React.FC = () => {
     if (selected) setTanggal(selected);
   };
 
- // Contoh untuk Waktu Mulai
+
 const onChangeWaktuMulai = (_: any, selected?: Date) => {
   setShowTimeMulaiPicker(false);
   if (selected) {
     setWaktuMulaiDate(selected);
     
-    // PERBAIKAN: Gunakan format yang menjamin titik dua (HH:mm)
     const jam = selected.getHours().toString().padStart(2, '0');
     const menit = selected.getMinutes().toString().padStart(2, '0');
     setWaktuMulai(`${jam}:${menit}`); 
@@ -89,9 +88,6 @@ const onChangeWaktuMulai = (_: any, selected?: Date) => {
   return formattedInput.length === 5 ? formattedInput + ':00' : formattedInput;
 };
 
-  // ============================
-  // 🔥 HANDLE SIMPAN (DISESUAIKAN)
-  // ============================
   const handleSimpan = async () => {
     // 🔒 VALIDASI USER
     if (!user || !user.id) {
