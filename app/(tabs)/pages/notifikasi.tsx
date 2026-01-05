@@ -2,18 +2,16 @@ import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   ScrollView,
 } from "react-native";
-import { Link, useFocusEffect } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import { BottomNav } from "@/components/bottomnav";
 import api from "../../service/api";
 import { useAuth } from "../../service/AuthContext";
 
 export default function NotifikasiScreen() {
   const { user } = useAuth();
-  const [selected, setSelected] = useState("Reminder");
   const [data, setData] = useState<any[]>([]);
 
   const fetchPengingat = async () => {
@@ -63,42 +61,6 @@ export default function NotifikasiScreen() {
       <Text style={styles.header}>Notifikasi</Text>
       <View style={styles.line} />
 
-      <View style={styles.filterWrapper}>
-        <TouchableOpacity
-          onPress={() => setSelected("Reminder")}
-          style={[
-            styles.filterBtn,
-            selected === "Reminder" && styles.activeFilter,
-          ]}
-        >
-          <Link
-            href="/(tabs)/popup"
-            style={[
-              styles.filterText,
-              selected === "Reminder" && styles.activeFilterText,
-            ]}
-          >
-            Reminder
-          </Link>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setSelected("Semua")}
-          style={[
-            styles.filterBtn,
-            selected === "Semua" && styles.activeFilter,
-          ]}
-        >
-          <Text
-            style={[
-              styles.filterText,
-              selected === "Semua" && styles.activeFilterText,
-            ]}
-          >
-            Semua
-          </Text>
-        </TouchableOpacity>
-      </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         {data.length === 0 && (
