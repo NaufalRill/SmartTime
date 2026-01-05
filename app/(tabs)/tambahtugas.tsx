@@ -46,10 +46,9 @@ export default function TambahTugasScreen() {
   const [deadline, setDeadline] = useState(new Date()); 
   const [showPicker, setShowPicker] = useState(false);
 
-  // 3. Tambahkan fungsi helper untuk handle perubahan tanggal
   const onChangeDate = (event: any, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
-      setShowPicker(false); // Tutup picker di Android setelah memilih
+      setShowPicker(false);
     }
     if (selectedDate) {
       setDeadline(selectedDate);

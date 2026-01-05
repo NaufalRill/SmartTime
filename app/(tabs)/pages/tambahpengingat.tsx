@@ -18,7 +18,7 @@ import { useAuth } from "../../service/AuthContext"; // ✅ TAMBAHAN
 
 export default function TambahPengingat() {
   const router = useRouter();
-  const { user } = useAuth(); // ✅ AMBIL USER LOGIN
+  const { user } = useAuth(); 
 
   const [namaTugas, setNamaTugas] = useState("");
 
@@ -37,7 +37,6 @@ export default function TambahPengingat() {
   const jenisOptions = ["Pop-Up", "Kalender", "Pesan"];
 
   const handleSave = async () => {
-    // 🔒 VALIDASI USER
     if (!user || !user.id) {
       Alert.alert("Error", "ID User tidak ditemukan. Silakan login ulang.");
       return;
@@ -249,7 +248,7 @@ export default function TambahPengingat() {
   );
 }
 
-/* ===================== STYLES (TIDAK DIUBAH) ===================== */
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
