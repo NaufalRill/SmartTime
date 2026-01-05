@@ -103,7 +103,7 @@ export default function HomeScreen() {
                         <TouchableOpacity 
                             key={option} 
                             style={styles.dropdownItem}
-                            onPress={() => handleSelectFilter(option)}
+                            onPress={() => handleSelectFilter(option)} //menampikan droopdown menu
                         >
                             <Text style={{ 
                                 fontWeight: currentFilter === option ? 'bold' : 'normal',
