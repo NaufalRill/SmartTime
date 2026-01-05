@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15, 
     backgroundColor: '#eee', 
     borderRadius: 8,
-    flexDirection: 'row', // Agar teks dan icon sejajar
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 5
   },
