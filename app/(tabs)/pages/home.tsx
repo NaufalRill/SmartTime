@@ -72,7 +72,7 @@ export default function HomeScreen() {
 
     const handleSelectFilter = (filterName: string) => {
     setCurrentFilter(filterName);
-    setIsFilterOpen(false); // Tutup dropdown
+    setIsFilterOpen(false);
     // useEffect/useFocusEffect akan otomatis mendeteksi perubahan state dan reload data
   };
 
