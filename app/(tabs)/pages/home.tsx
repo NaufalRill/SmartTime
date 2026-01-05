@@ -28,7 +28,7 @@ export default function HomeScreen() {
     if (!user?.id) return;
 
     try {
-      const param = kategoriDipilih === "Semua" ? "" : `?kategori=${kategoriDipilih}`;
+      const param = kategoriDipilih === "Semua" ? "" : `?kategori=${kategoriDipilih}`; //memilih kategori
       const response = await api.get('/tugas', {
         params: {
             id_user: user.id,
