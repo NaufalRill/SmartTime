@@ -30,7 +30,7 @@ const FormRow: React.FC<FormRowProps> = ({ label, children }) => (
 
 const TambahKegiatan: React.FC = () => {
   const router = useRouter();
-  const { user } = useAuth(); // ✅ AMBIL USER LOGIN
+  const { user } = useAuth();
 
   const [nama_kegiatan, setNamaKegiatan] = useState('');
   const [kategori, setKategori] = useState('Pilih opsi');
