@@ -20,7 +20,7 @@ export default function HomeScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const [currentFilter, setCurrentFilter] = useState("Semua");
-  const [isFilterOpen, setIsFilterOpen] = useState(false); // Untuk buka/tutup dropdown
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   
   const filterOptions = [ "Semua", "Tugas", "Kuliah", "Organisasi"]; // Sesuaikan opsi database
 
