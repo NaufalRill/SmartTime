@@ -37,7 +37,6 @@ export default function TambahPengingat() {
   const jenisOptions = ["Pop-Up", "Kalender", "Pesan"];
 
   const handleSave = async () => {
-    // 🔒 VALIDASI USER
     if (!user || !user.id) {
       Alert.alert("Error", "ID User tidak ditemukan. Silakan login ulang.");
       return;
