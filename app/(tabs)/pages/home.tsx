@@ -88,7 +88,7 @@ export default function HomeScreen() {
         <View style={{ position: 'relative' }}> 
             <TouchableOpacity 
                 style={styles.filterBtn} 
-                onPress={() => setIsFilterOpen(!isFilterOpen)}
+                onPress={() => setIsFilterOpen(!isFilterOpen)} //menampilkan filter row dropdown
             >
                 <Text style={styles.filterText}>
                     {currentFilter === "Semua" ? "Filter" : currentFilter}
