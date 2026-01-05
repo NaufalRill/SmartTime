@@ -241,7 +241,6 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   
-  // Styles Bagian Status
   statusContainer: {
     marginBottom: 30,
   },
